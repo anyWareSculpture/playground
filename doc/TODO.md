@@ -30,8 +30,25 @@ We'll likely use a JSON-based protocol/API for the communication over the web so
 
 **Tasks**
 
+* Research strategies for JSON APIs over web sockets
 * Define JSON protocol/API
 * Implement protocol framework for both server and clients (Javascript)
+
+## Server Messaging and State Machine
+
+The server will keep track of the state of the individual sculptures
+and make sure they're kept in sync.
+Thinking about this should probably be done before defining the JSON protocol/API.
+
+**Tasks**
+
+* State Machine strategy
+* Messaging strategy
+* How to deal with network issues
+* What types of interaction will we support?
+* How low-level will the communication between the server and sculptures be?
+* What kind of bandwidth do we need/want to sustain?
+
 
 ## Server Infrastructure
 
