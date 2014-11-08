@@ -61,6 +61,8 @@ We might need a database. If that's the case, look into MongoDB.
 * Authentication
 * Web socket upgrading
 * Serving of web content (typically Express)
+* SSL support
+* Find, register and set up domain for anyware
 
 ## Embedded computer Infrastructure
 
@@ -104,3 +106,15 @@ The web client will talk to the server using the same web socket protocol/API as
 * Implement knock box simulation
 * Look into how to share code between embedded computer and web client
 * Integrate web client content into the server framework
+
+## Test framework
+
+We should try to use the same test framework for all javascript code
+(server code, embedded code and web client code). Since we're using node.js,
+look into using mocha and chai as the core components of a test
+framework. For testing the web client GUI, look into alternatives.
+
+**Tasks**
+
+* Establish basic test framework
+* Add initial tests for server, embedded and web client code
