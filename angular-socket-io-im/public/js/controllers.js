@@ -44,6 +44,7 @@ function AppCtrl($scope, socket) {
     }
   });
 
+
   // Private helpers
   // ===============
 
@@ -84,9 +85,13 @@ function AppCtrl($scope, socket) {
   $scope.messages = [];
 
   $scope.sendMessage = function () {
-    socket.emit('send:message', {
-      message: $scope.message
-    });
+    socket.emit('send:message',
+      $scope.message 
+    );
+
+    //  {
+    //   message: $scope.message
+    // });
 
     // add the message to our model locally
     $scope.messages.push({
@@ -98,3 +103,52 @@ function AppCtrl($scope, socket) {
     $scope.message = '';
   };
 }
+
+
+function LoginCtrl($scope, socket, $location) {
+
+  $scope.login = function() {
+    socket.emit('command', {
+      "login" : $scope.username
+    }, function (result) {
+      if(!result) {
+        alert('Error logging in.')
+      } else {
+        console.log(result);
+      }
+    });
+
+    $location.url('/approach');
+  }
+
+
+};
+
+function ApproachCtrl($scope, socket, $location) {
+
+  $scope.approach = function() {
+    socket.emit('command', {
+     "proximity": "1"
+    });
+    $location.url('/closed'); //todo abstract this to a next call
+  }
+};
+
+function ClosedCtrl($scope, socket, $location) {
+  $scope.continue = function() {
+    $location.url('/shadow');
+  };
+};
+
+function ShadowCtrl($scope, socket, $location) {
+  $scope.continue = function() {
+    $location.url('/light');
+  };
+};
+
+function LightCtrl($scope, socket, $location) {
+  $scope.continue = function() {
+    $location.url('/closed');
+  };
+};
+

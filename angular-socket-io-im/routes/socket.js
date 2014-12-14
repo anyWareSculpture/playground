@@ -50,26 +50,41 @@ var userNames = (function () {
 
 // export function for listening to the socket
 module.exports = function (socket) {
+  var jsonserver = require('./jsonserver');
   var name = userNames.getGuestName();
+  var currobj = new jsonserver.CyberObject(socket);
+
+  // socket.on('object', function (data){
+  //   console.log(data);
+  //   jsonserver.objectReceived(currobj, data);
+  //   socket.emit('object', data);
+  // });
 
   // send the new user their name and a list of users
-  socket.emit('init', {
-    name: name,
-    users: userNames.get()
-  });
+  // socket.emit('init', {
+  //   name: name,
+  //   users: userNames.get()
+  // });
 
   // notify other clients that a new user has joined
-  socket.broadcast.emit('user:join', {
-    name: name
-  });
+  // socket.broadcast.emit('user:join', {
+  //   name: name
+  // });
 
   // broadcast a user's message to other users
   socket.on('send:message', function (data) {
-    socket.broadcast.emit('send:message', {
-      user: name,
-      text: data.message
-    });
+     // console.log(data);
+    jsonserver.objectReceived(currobj, data + '\n');
+    // socket.broadcast.emit('send:message', {
+    //   user: name,
+    //   text: data.message
+    // });
   });
+
+  socket.on('command', function (data) {
+    console.log('here' + JSON.stringify(data));
+    jsonserver.objectReceived(currobj, JSON.stringify(data) + '\n');
+  })
 
   // validate a user's name change, and broadcast it on success
   socket.on('change:name', function (data, fn) {
