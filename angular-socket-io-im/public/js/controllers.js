@@ -2,7 +2,7 @@
 
 /* Controllers */
 
-function AppCtrl($scope, socket) {
+function AppCtrl($scope, socket, $location) {
 
   // Socket listeners
   // ================
@@ -30,6 +30,7 @@ function AppCtrl($scope, socket) {
 
   // add a message to the conversation when a user disconnects or leaves the room
   socket.on('user:left', function (data) {
+    // TODO socket logout command
     $scope.messages.push({
       user: 'chatroom',
       text: 'User ' + data.name + ' has left.'
@@ -82,25 +83,21 @@ function AppCtrl($scope, socket) {
     });
   };
 
-  $scope.messages = [];
+  // Define page flow
+  $scope.continue = function () {
+    console.log('here');
+    var url = $location.url();
+    var newUrl = '';
+    switch(url) {
+      case '/login'   : newUrl = '/approach'; break;
+      case '/approach': newUrl = '/closed';   break;
+      case '/closed'  : newUrl = '/shadow';   break;
+      case '/shadow'  : newUrl = '/light';   break;
+      case '/light'  : newUrl = '/closed';   break;
+      default         : '/login';             break;
+    }
 
-  $scope.sendMessage = function () {
-    socket.emit('send:message',
-      $scope.message 
-    );
-
-    //  {
-    //   message: $scope.message
-    // });
-
-    // add the message to our model locally
-    $scope.messages.push({
-      user: $scope.name,
-      text: $scope.message
-    });
-
-    // clear message box
-    $scope.message = '';
+    $location.url(newUrl);
   };
 }
 
@@ -118,7 +115,7 @@ function LoginCtrl($scope, socket, $location) {
       }
     });
 
-    $location.url('/approach');
+    $scope.continue();
   }
 
 
@@ -130,25 +127,34 @@ function ApproachCtrl($scope, socket, $location) {
     socket.emit('command', {
      "proximity": "1"
     });
-    $location.url('/closed'); //todo abstract this to a next call
+
+    $scope.continue();
   }
 };
 
 function ClosedCtrl($scope, socket, $location) {
-  $scope.continue = function() {
-    $location.url('/shadow');
+
+  $scope.messages = [];
+
+  $scope.sendMessage = function () {
+    socket.emit('send:message',
+      $scope.message 
+    );
+
+    // add the message to our model locally
+    $scope.messages.push({
+      user: $scope.name,
+      text: $scope.message
+    });
+
+    // clear message box
+    $scope.message = '';
   };
 };
 
 function ShadowCtrl($scope, socket, $location) {
-  $scope.continue = function() {
-    $location.url('/light');
-  };
 };
 
 function LightCtrl($scope, socket, $location) {
-  $scope.continue = function() {
-    $location.url('/closed');
-  };
 };
 

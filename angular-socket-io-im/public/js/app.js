@@ -13,7 +13,7 @@ config(['$routeProvider', '$locationProvider', function($routeProvider, $locatio
   when('/login', {
     templateUrl: 'partials/login.jade',
     controller: 'LoginCtrl'
-  }).
+  }). // TODO enforce need to login first
 
   when('/approach', {
     templateUrl: 'partials/approach.jade',
@@ -34,6 +34,8 @@ config(['$routeProvider', '$locationProvider', function($routeProvider, $locatio
   	templateUrl: 'partials/light.jade',
   	controller: 'LightCtrl'
   }).
+
+  //TODO Logout (and logout on close)
 
   otherwise({redirectTo: '/login'});
 
