@@ -33,8 +33,7 @@ Game.prototype.shaveAndHaircut = function() {
   CyberObject.forEach(function(name, obj) {
     var sendstr = JSON.stringify(Game.shaveAndHaircutMessage);
     debug("writing '" + sendstr + "'");
-    obj.write(sendstr);
-    obj.write("\n");
+    obj.write(sendstr + "\n");
   });
 }
 

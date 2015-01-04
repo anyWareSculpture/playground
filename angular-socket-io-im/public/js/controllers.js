@@ -4,13 +4,17 @@
 
 function AppCtrl($scope, socket, $location) {
 
+  $scope.name = '';
+  $scope.users = [];
+  $scope.messages = [];
+
   // Socket listeners
   // ================
 
-  socket.on('init', function (data) {
-    $scope.name = data.name;
-    $scope.users = data.users;
-  });
+  // socket.on('init', function (data) {
+  //   $scope.name = data.name;
+  //   $scope.users = data.users;
+  // });
 
   socket.on('send:message', function (message) {
     $scope.messages.push(message);
@@ -85,7 +89,6 @@ function AppCtrl($scope, socket, $location) {
 
   // Define page flow
   $scope.continue = function () {
-    console.log('here');
     var url = $location.url();
     var newUrl = '';
     switch(url) {
@@ -133,8 +136,6 @@ function ApproachCtrl($scope, socket, $location) {
 };
 
 function ClosedCtrl($scope, socket, $location) {
-
-  $scope.messages = [];
 
   $scope.sendMessage = function () {
     socket.emit('send:message',
