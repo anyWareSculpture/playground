@@ -110,18 +110,13 @@ function LoginCtrl($scope, socket, $location) {
   $scope.login = function() {
     socket.emit('command', {
       "login" : $scope.username
-    }, function (result) {
-      if(!result) {
-        alert('Error logging in.')
-      } else {
-        console.log(result);
-      }
     });
+
+    // add to user list
+    $scope.users.push($scope.username);
 
     $scope.continue();
   }
-
-
 };
 
 function ApproachCtrl($scope, socket, $location) {
