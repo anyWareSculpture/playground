@@ -113,6 +113,18 @@ function ClosedCtrl($scope, socket, $location) {
     // clear message box
     $scope.message = '';
   };
+
+  $scope.respondCorrect = function() {
+    $scope.sendMessage(
+      { 'knockpattern': [1000, 500]}
+    );
+  };
+
+  $scope.respondIncorrect = function() {
+    $scope.sendMessage(
+      { 'knockpattern': [500, 500, 500]}
+    );
+  };
 };
 
 function ShadowCtrl($scope, socket, $location) {

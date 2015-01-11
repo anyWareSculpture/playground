@@ -4,20 +4,13 @@
             p(ng-repeat='message in messages',
             ng-class='{alert: message.user == "chatroom"}') {{message.user}}: {{message.text}}
 
-.clr 
-  form(ng-submit='sendMessage()')
-    | Message: 
-    input(size='60', ng-model='message')
-    input(type='submit', value='Send')
+    .clr
+        form(ng-submit='respondCorrect()')
+            input(type='submit', value='Correct Response')
 
-.col
-  h3 Users
-  .overflowable
-    p(ng-repeat='user in users') {{user}}
+        form(ng-submit='respondIncorrect()')
+            input(type='submit', value='Incorrect Response')
 
-.clr
-    form(ng-submit='continue()')
-        input(type='submit', value='Continue')
 .col
     h3 Users
         .overflowable
