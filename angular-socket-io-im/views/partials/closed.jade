@@ -1,7 +1,3 @@
-//- Setup closed state like a chatroom for now
-//- TODO Buttons for correct/incorrect response to knock.
-//- TODO Interesting interface to visualize and respond to knock.
-
 .col
     h3 Messages
         .overflowable
@@ -22,4 +18,11 @@
 .clr
     form(ng-submit='continue()')
         input(type='submit', value='Continue')
+.col
+    h3 Users
+        .overflowable
+            p(ng-repeat='user in users') {{user.name}}
 
+    .clr
+        form(ng-submit='continue()')
+            input(type='submit', value='Continue')

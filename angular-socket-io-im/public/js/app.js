@@ -1,6 +1,5 @@
 'use strict';
 
-
 // Declare app level module which depends on filters, and services
 var app = angular.module('myApp', 
 	[
@@ -13,7 +12,7 @@ config(['$routeProvider', '$locationProvider', function($routeProvider, $locatio
   when('/login', {
     templateUrl: 'partials/login.jade',
     controller: 'LoginCtrl'
-  }). // TODO enforce need to login first
+  }). // TODO enforce need to login before accessing  other pages
 
   when('/approach', {
     templateUrl: 'partials/approach.jade',

@@ -184,8 +184,7 @@ server.listen(7000);
 
 function objectReceived(cyberobj, data) {
     var message = cyberobj.read(data);
-  console.log('objectReceived ' + JSON.stringify(data));
-  console.log('message ' + message);
+    console.log('objectReceived ' + JSON.stringify(data));
     if (message) {
       if (message.hasOwnProperty('login')) {
         debug("Got login: " + JSON.stringify(message));
@@ -198,9 +197,9 @@ function objectReceived(cyberobj, data) {
         }
 
         CyberObject.forEach(function(name, obj) {
-          // if (obj != cyberobj) {
+          if (obj != cyberobj) {
             obj.write(cyberobj.name + " has joined.\n");
-          // }
+          }
         });
       }
       else if (message.hasOwnProperty('proximity')) {
