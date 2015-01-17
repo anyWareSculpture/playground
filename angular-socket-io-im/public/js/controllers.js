@@ -7,16 +7,18 @@ function AppCtrl($scope, socket, $location) {
   // Initialize
   // ==========
 
-  $scope.name = '';
-  $scope.users = [];
-  $scope.messages = [];
+
 
   // Socket listeners
   // ================
 
   socket.on('init', function (data) {
-    $scope.name = data.name;
-    $scope.users = data.users || [];
+    $scope.user = {
+      name: '',
+      proximity: 0
+    };
+    $scope.users = [];
+    $scope.messages = [];
   });
 
   socket.on('send:message', function (message) {
@@ -74,11 +76,11 @@ function LoginCtrl($scope, socket, $location) {
 
   $scope.login = function() {
     socket.emit('command', {
-      "login" : $scope.username
+      "login" : $scope.user.name
     });
 
     // add to user list
-    $scope.users.push($scope.username);
+    $scope.users.push($scope.user);
 
     $scope.continue();
   }
@@ -106,7 +108,7 @@ function ClosedCtrl($scope, socket, $location) {
 
     // add the message to our model locally
     $scope.messages.push({
-      user: $scope.name,
+      user: $scope.user.name,
       text: message
     })
 
