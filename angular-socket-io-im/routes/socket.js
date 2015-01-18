@@ -2,42 +2,31 @@ module.exports = function (socket) {
   var jsonserver = require('./jsonserver');
   var currobj = new jsonserver.CyberObject(socket);
 
-  // socket.on('object', function (data){
-  //   console.log(data);
-  //   jsonserver.objectReceived(currobj, data);
-  //   socket.emit('object', data);
-  // });
 
-  // send the new user their name and a list of users
-  socket.emit('init', {
-    name: currobj.name,
-    users: currobj.allObjects
+  // Listen for events sent from client
+  socket.on('user:login', function(data) {
+    // data = { name: '' }
+    jsonserver.objectReceived(currobj, JSON.stringify({
+      "login" : data.name
+    }) + "\n");
   });
 
-  // notify other clients that a new user has joined
-  // socket.broadcast.emit('user:join', {
-  //   name: name
-  // });
+  socket.on('user:change', function(data) {
+    // data = { name: '', proximity: 0 }
+    jsonserver.objectReceived(currobj, JSON.stringify(data) + "\n");
+  });
 
-  // broadcast a user's message to other users
+  socket.on('user:logout', function(data) {
+    //TODO
+  });
+
   socket.on('send:message', function (data) {
-     // console.log(data);
     jsonserver.objectReceived(currobj, data + '\n');
-    // socket.broadcast.emit('send:message', {
-    //   user: name,
-    //   text: data.message
-    // });
   });
 
   socket.on('command', function (data) {
     jsonserver.objectReceived(currobj, JSON.stringify(data) + '\n');
-  })
+  });
 
-  // clean up when a user leaves, and broadcast it to other users
-  // socket.on('disconnect', function () {
-  //   socket.broadcast.emit('user:left', {
-  //     name: name
-  //   });
-  //   userNames.free(name);
-  // });
+  socket.emit('init', jsonserver.CyberObject.allobjects);
 };

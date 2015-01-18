@@ -62,7 +62,7 @@ Game.prototype.knockpattern = function(obj, pattern) {
                           pattern[1] > 400 && pattern[1] < 600);
   if (pattern_accepted) {
     CyberObject.forEach(function(name, obj) {
-      obj.write(JSON.stringify({cmd: "open_sesame"}) + "\n");
+      obj.write({eventName: 'command', eventData: 'open_sesame'});
     });
   }
 }
@@ -121,8 +121,11 @@ CyberObject.prototype.setActive = function(act) {
 
 CyberObject.prototype.write = function(data) {
   console.log('writing to socket: ' + JSON.stringify(data));
-  this.socket.emit('send:message', { 'user' : 'chatroom', 'text' : data});
-  //            obj.socket.write(data);
+  if (data.eventName) {
+    this.socket.emit(data.eventName, data.eventData);
+  } else {
+    this.socket.emit('send:message', { 'user' : 'chatroom', 'text' : data});
+  }
 }
 
 CyberObject.prototype.read = function(data) {
@@ -198,7 +201,12 @@ function objectReceived(cyberobj, data) {
 
         CyberObject.forEach(function(name, obj) {
           if (obj != cyberobj) {
-            obj.write(cyberobj.name + " has joined.\n");
+            // obj.write(cyberobj.name + " has joined.\n");
+            obj.write({ eventName: 'user:login', eventData: {
+              proximity: cyberobj.proximity || 0,
+              name: cyberobj.name
+              
+            }});
           }
         });
       }
@@ -212,7 +220,13 @@ function objectReceived(cyberobj, data) {
           debug("No Proximity");
         }
         CyberObject.forEach(function(name, obj) {
-          if (obj != cyberobj) obj.write(cyberobj.name + " proximity is now " + cyberobj.proximity + "\n");
+          if (obj != cyberobj) {
+            // obj.write(cyberobj.name + " proximity is now " + cyberobj.proximity + "\n");
+            obj.write({eventName: 'user:change', eventData: {
+              name: cyberobj.name,
+              proximity: cyberobj.proximity || 0
+            }});
+          }
         });
         if (Game.game) Game.game.proximity(cyberobj);
       }

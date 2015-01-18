@@ -4,11 +4,6 @@
 
 function AppCtrl($scope, socket, $location) {
 
-  // Initialize
-  // ==========
-
-
-
   // Socket listeners
   // ================
 
@@ -17,25 +12,35 @@ function AppCtrl($scope, socket, $location) {
       name: '',
       proximity: 0
     };
-    $scope.users = [];
+    $scope.users = {};
     $scope.messages = [];
   });
 
   socket.on('send:message', function (message) {
     $scope.messages.push(message);
+  });
 
-    if(message.text.search('open_sesame') >= 0) {
+  socket.on('user:login', function (data) { 
+    $scope.messages.push({ 
+      user: 'chatroom',
+      text: 'User ' + data.name + ' has joined.'
+    });
+    $scope.users[data.name] = data;
+  });
+
+  socket.on('user:change', function(data) {
+    $scope.messages.push({ 
+      user: 'chatroom',
+      text: 'User ' + data.name + ' proximity is now ' + data.proximity + '.'
+    });
+    $scope.users[data.name] = data;
+  });
+
+  socket.on('command', function(data) {
+    if(data === 'open_sesame') {
       $scope.continue();
     }
   });
-
-  // socket.on('user:join', function (data) { 
-  //   $scope.messages.push({ 
-  //     user: 'chatroom',
-  //     text: 'User ' + data.name + ' has joined.'
-  //   });
-  //   $scope.users.push(data.name);
-  // });
 
   // // add a message to the conversation when a user disconnects or leaves the room
   // socket.on('user:left', function (data) {
@@ -75,12 +80,10 @@ function AppCtrl($scope, socket, $location) {
 function LoginCtrl($scope, socket, $location) {
 
   $scope.login = function() {
-    socket.emit('command', {
-      "login" : $scope.user.name
-    });
+    socket.emit('user:login', $scope.user);
 
     // add to user list
-    $scope.users.push($scope.user);
+    $scope.users[$scope.user.name] = $scope.user;
 
     $scope.continue();
   }
@@ -89,9 +92,13 @@ function LoginCtrl($scope, socket, $location) {
 function ApproachCtrl($scope, socket, $location) {
 
   $scope.approach = function() {
-    socket.emit('command', {
+    socket.emit('user:change', {
      "proximity": "1"
     });
+
+    // TODO fix the way current user and user list is stored
+    $scope.user.proximity = 1;
+    $scope.users[$scope.user.name].proximity = 1;
 
     $scope.continue();
   }
