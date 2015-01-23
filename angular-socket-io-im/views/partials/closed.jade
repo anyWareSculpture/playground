@@ -10,12 +10,3 @@
 
         form(ng-submit='respondIncorrect()')
             input(type='submit', value='Incorrect Response')
-
-.col
-    h3 Users
-        .overflowable
-            p(ng-repeat='user in users') {{ user.name }} {{ user.proximity }}
-
-    .clr
-        form(ng-submit='continue()')
-            input(type='submit', value='Continue')

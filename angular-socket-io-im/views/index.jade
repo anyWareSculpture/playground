@@ -4,6 +4,11 @@ block body
   h1 anyWare Demo
   div(ng-controller='AppCtrl')
 
+    .col
+      h3 Users
+        .overflowable
+          p(ng-repeat='user in users') {{ user.name }} {{ user.proximity }}
+
     div(ng-view)
 
     //- .col
