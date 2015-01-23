@@ -5,14 +5,14 @@ var app = angular.module('myApp',
 	[
 	'myApp.filters',
 	'myApp.directives',
-	]).
+	])
 
-config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
+.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
   $routeProvider.
   when('/login', {
     templateUrl: 'partials/login.jade',
     controller: 'LoginCtrl'
-  }). // TODO enforce need to login before accessing  other pages
+  }).
 
   when('/approach', {
     templateUrl: 'partials/approach.jade',
@@ -39,4 +39,16 @@ config(['$routeProvider', '$locationProvider', function($routeProvider, $locatio
   otherwise({redirectTo: '/login'});
 
   $locationProvider.html5Mode(true);
-}]);
+}])
+
+.run(function($rootScope, $location) {
+
+  // register listener to watch route changes
+  $rootScope.$on( "$routeChangeStart", function(event, next, current) {
+    // enforce login before viewing other pages
+    if ( !$rootScope.hasUser()  &&
+      next.templateUrl !== "partials/login.jade") {
+      $location.path( "/login" );
+    }
+  });
+});

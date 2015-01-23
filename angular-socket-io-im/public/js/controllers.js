@@ -2,18 +2,23 @@
 
 /* Controllers */
 
-function AppCtrl($scope, socket, $location) {
+function AppCtrl($scope, socket, $location, $rootScope) {
+  // Init
+  //=================
+
+  $scope.user = {
+    name: '',
+    proximity: 0
+  };
+  $scope.users = {};
+  $scope.messages = [];
+
 
   // Socket listeners
   // ================
 
   socket.on('init', function (data) {
-    $scope.user = {
-      name: '',
-      proximity: 0
-    };
-    $scope.users = {};
-    $scope.messages = [];
+
   });
 
   socket.on('send:message', function (message) {
@@ -73,6 +78,10 @@ function AppCtrl($scope, socket, $location) {
     }
 
     $location.url(newUrl);
+  };
+
+  $rootScope.hasUser = function() {
+    return $scope.user.name !== '';
   };
 }
 

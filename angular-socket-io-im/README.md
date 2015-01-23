@@ -45,7 +45,8 @@ in a new terminal tab, and navigate to http://127.0.0.1:8080/debug?port=5858.
 	(fixing status bar should take care of this)
 
 ### General
-- Enforce login before accessing remaining app flow
+- ~~Enforce login before accessing remaining app flow~~
+- Disable interaction if proximity is not set?
 - Clean up controllers.js, seperate into view specific files
 - Do cleanup on "logout"/tab close to remove cyberObjects and update status bars
 ...
