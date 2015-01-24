@@ -10,7 +10,6 @@ function AppCtrl($scope, socket, $location, $rootScope) {
     name: '',
     proximity: 0
   };
-  $scope.users = {};
   $scope.messages = [];
 
 
@@ -18,7 +17,7 @@ function AppCtrl($scope, socket, $location, $rootScope) {
   // ================
 
   socket.on('init', function (data) {
-
+    $scope.users = data;
   });
 
   socket.on('send:message', function (message) {

@@ -240,5 +240,17 @@ function objectReceived(cyberobj, data) {
     }
 }
 
+function getAllObjects() {
+  var ret = {};
+  CyberObject.forEach(function(name, obj) {
+    ret[name] = _.defaults(
+      _.pick(obj, 'name', 'proximity'), 
+      {name: '', proximity: 0}
+    );
+  });
+  return ret;
+}
+
 module.exports.CyberObject = CyberObject;
 module.exports.objectReceived = objectReceived;
+module.exports.getAllObjects = getAllObjects;

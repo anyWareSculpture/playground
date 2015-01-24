@@ -1,6 +1,7 @@
 module.exports = function (socket) {
   var jsonserver = require('./jsonserver');
   var currobj = new jsonserver.CyberObject(socket);
+  var _ = require('underscore');
 
 
   // Listen for events sent from client
@@ -28,5 +29,5 @@ module.exports = function (socket) {
     jsonserver.objectReceived(currobj, JSON.stringify(data) + '\n');
   });
 
-  socket.emit('init', jsonserver.CyberObject.allobjects);
+  socket.emit('init', jsonserver.getAllObjects());
 };
