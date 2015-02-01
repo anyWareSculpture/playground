@@ -22,6 +22,7 @@ One way of doing it (using nvm):
 
 ## Run server on localhost
 
+    cd <server folder> # e.g. angular-socket-io-im
     npm install
     node index.js
 
@@ -32,6 +33,7 @@ One way of doing it (using nvm):
 Until further notice:
 
 * Same as localhost deployment. Use your own user.
+* NB! use the "nodejs" command on the server, instead of "node"
 
 ### Run client
 
