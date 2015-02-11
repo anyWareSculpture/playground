@@ -46,22 +46,10 @@ function AppCtrl($scope, socket, $location, $rootScope) {
     }
   });
 
-  // // add a message to the conversation when a user disconnects or leaves the room
-  // socket.on('user:left', function (data) {
-  //   // TODO socket logout command
-  //   $scope.messages.push({
-  //     user: 'chatroom',
-  //     text: 'User ' + data.name + ' has left.'
-  //   });
-  //   var i, user;
-  //   for (i = 0; i < $scope.users.length; i++) {
-  //     user = $scope.users[i];
-  //     if (user === data.name) {
-  //       $scope.users.splice(i, 1);
-  //       break;
-  //     }
-  //   }
-  // });
+  socket.on('user:logout', function (data) {
+    // remove user from user list
+    delete $scope.users[data.name]
+  });
 
   // Define page flow
   $scope.continue = function (routeParams) {

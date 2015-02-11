@@ -55,7 +55,7 @@ and you will be directed back to the initial requested page.
 - ~~Enforce login before accessing remaining app flow~~
 - Disable interaction if proximity is not set?
 - Clean up controllers.js, seperate into view specific files
-- Do cleanup on "logout"/tab close to remove cyberObjects and update status bars
+- ~~Do cleanup on "logout"/tab close to remove cyberObjects and update status bars~~
 ...
 - Visualize knock pattern instead of just a message box
 - Make everything pretty

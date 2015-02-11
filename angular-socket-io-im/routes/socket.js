@@ -17,16 +17,18 @@ module.exports = function (socket) {
     jsonserver.objectReceived(currobj, JSON.stringify(data) + "\n");
   });
 
-  socket.on('user:logout', function(data) {
-    //TODO
-  });
-
   socket.on('send:message', function (data) {
     jsonserver.objectReceived(currobj, data + '\n');
   });
 
   socket.on('command', function (data) {
     jsonserver.objectReceived(currobj, JSON.stringify(data) + '\n');
+  });
+
+  socket.on('disconnect', function() {
+    jsonserver.objectReceived(currobj, JSON.stringify({
+      "logout" : currobj.name
+    }) + "\n");
   });
 
   socket.emit('init', jsonserver.getAllObjects());

@@ -234,6 +234,25 @@ function objectReceived(cyberobj, data) {
         debug("Got knock pattern");
         if (Game.game) Game.game.knockpattern(cyberobj, message.knockpattern);
       }
+      else if (message.hasOwnProperty('logout')) {
+        debug("Got logout: " + JSON.stringify(message));
+        if (cyberobj.name) CyberObject.removeObject(cyberobj);
+        else anonclients.remove(cyberobj);
+
+        CyberObject.forEach(function(name, obj) {
+          obj.write({
+            eventName: 'user:logout',
+            eventData: {
+              name: cyberobj.name
+            }
+          });
+        });
+
+        if (Game.game !== null && _.size(CyberObject.allobjects) < 2) {
+          debug("Not enough players to continue playing\n");
+          Game.game = null;
+        }
+      }
       else {
         debug("Got unknown message: " + JSON.stringify(message));
       }
