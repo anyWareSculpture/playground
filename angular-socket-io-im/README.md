@@ -31,18 +31,25 @@ To enable chrome debugger for node app, install `node-inspector`, run:
 
 in a new terminal tab, and navigate to http://127.0.0.1:8080/debug?port=5858.
 
+## URL Redirects
+
+For ease of development and testing, navigate to any state. You will be
+redirected to the login page. After logging in, your proximity will be set,
+and you will be directed back to the initial requested page.
 
 ## TODO
 
 ### Status Bar
 - ~~FIX logged in user state isn't sent from cyberObject after user status change~~
 - ~~Include list of user name, and corresponding proximity in status bar~~
-- FIX send current status of other users when another user logs in, not just on change
-- Move status bar into index.jade, present on every page
+- ~~FIX send current status of other users when another user logs in, not just on change~~
+- ~~Move status bar into index.jade, present on every page~~
+- Don't want status bar on login page, as won't recieve any login broadcast
+  events unless logged in
 
 ### Chat box
-- Populate username in messages list on message send
-	(fixing status bar should take care of this)
+- ~~Populate username in messages list on message send~~
+	~~(fixing status bar should take care of this)~~
 
 ### General
 - ~~Enforce login before accessing remaining app flow~~
