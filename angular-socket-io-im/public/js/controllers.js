@@ -64,16 +64,31 @@ function AppCtrl($scope, socket, $location, $rootScope) {
   // });
 
   // Define page flow
-  $scope.continue = function () {
+  $scope.continue = function (routeParams) {
+    routeParams = routeParams || {};
     var url = $location.url();
     var newUrl = '';
     switch(url) {
       case '/login'   : newUrl = '/approach'; break;
       case '/approach': newUrl = '/closed';   break;
       case '/closed'  : newUrl = '/shadow';   break;
-      case '/shadow'  : newUrl = '/light';   break;
+      case '/shadow'  : newUrl = '/light';    break;
       case '/light'   : newUrl = '/closed';   break;
       default         : '/login';             break;
+    }
+
+    // For dev & testing convenience
+    if(routeParams.hasOwnProperty('url')) {
+      newUrl = routeParams.url;
+
+      socket.emit('user:change', {
+        "proximity": "1"
+      });
+
+      $scope.user.proximity = 1;
+      $scope.users[$scope.user.name].proximity = 1;
+
+      $scope.continue();
     }
 
     $location.url(newUrl);
@@ -85,15 +100,14 @@ function AppCtrl($scope, socket, $location, $rootScope) {
 }
 
 
-function LoginCtrl($scope, socket, $location) {
-
+function LoginCtrl($scope, socket, $location, $routeParams) {
   $scope.login = function() {
     socket.emit('user:login', $scope.user);
 
     // add to user list
     $scope.users[$scope.user.name] = $scope.user;
 
-    $scope.continue();
+    $scope.continue($routeParams);
   }
 };
 

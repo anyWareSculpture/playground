@@ -47,8 +47,19 @@ var app = angular.module('myApp',
   $rootScope.$on( "$routeChangeStart", function(event, next, current) {
     // enforce login before viewing other pages
     if ( !$rootScope.hasUser()  &&
-      next.templateUrl !== "partials/login.jade") {
-      $location.path( "/login" );
+      $location.path() !== '/login') {
+        var qs = $location.search();
+        if($location.hasOwnProperty('name')) {
+          // if query string has a name, autologin and set proximity
+          // then continue to originally requested page
+          $rootScope.login($location.search('name')); //TODO
+          $rootScope.approach(); //TODO
+        } else {
+          // if no login name in query string, redirect to login
+          // with intended path as the query string
+          $location.search('url', $location.path());
+          $location.path('/login');
+        }
     }
   });
 });
