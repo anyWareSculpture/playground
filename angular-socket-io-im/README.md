@@ -46,6 +46,7 @@ and you will be directed back to the initial requested page.
 - ~~Move status bar into index.jade, present on every page~~
 - Don't want status bar on login page, as won't recieve any login broadcast
   events unless logged in
+- button to log out / reset proximity
 
 ### Chat box
 - ~~Populate username in messages list on message send~~
@@ -53,10 +54,13 @@ and you will be directed back to the initial requested page.
 
 ### General
 - ~~Enforce login before accessing remaining app flow~~
-- Disable interaction if proximity is not set?
+- Disable interaction if proximity is not set
 - Clean up controllers.js, seperate into view specific files
 - ~~Do cleanup on "logout"/tab close to remove cyberObjects and update status bars~~
 ...
 - Visualize knock pattern instead of just a message box
 - Make everything pretty
 - 'Open Sesame' transition
+- clean up jsonserver to 'broadcast' instead of emit for each for efficiency
+- Clean up the 'open_sesame' to indicate which state you should be
+switching to. This takes care of resyncing potentially out of sync users.
