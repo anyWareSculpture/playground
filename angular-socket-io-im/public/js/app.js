@@ -34,8 +34,6 @@ var app = angular.module('myApp',
   	controller: 'LightCtrl'
   }).
 
-  //TODO Logout (and logout on close)
-
   otherwise({redirectTo: '/login'});
 
   $locationProvider.html5Mode(true);

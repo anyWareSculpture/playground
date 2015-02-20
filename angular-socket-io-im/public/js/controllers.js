@@ -32,7 +32,7 @@ function AppCtrl($scope, socket, $location, $rootScope) {
     $scope.users[data.name] = data;
   });
 
-  socket.on('user:change', function(data) {
+  socket.on('user:change', function (data) {
     $scope.messages.push({ 
       user: 'chatroom',
       text: 'User ' + data.name + ' proximity is now ' + data.proximity + '.'
@@ -52,8 +52,8 @@ function AppCtrl($scope, socket, $location, $rootScope) {
   });
 
   // Define page flow
-  $scope.continue = function (routeParams) {
-    routeParams = routeParams || {};
+  $scope.continue = function (options) {
+    options = options || {};
     var url = $location.url();
     var newUrl = '';
     switch(url) {
@@ -65,18 +65,21 @@ function AppCtrl($scope, socket, $location, $rootScope) {
       default         : '/login';             break;
     }
 
-    // For dev & testing convenience
-    if(routeParams.hasOwnProperty('url')) {
-      newUrl = routeParams.url;
+    // redirect to supplied url
+    if(options.hasOwnProperty('url')) {
+      newUrl = options.url;
 
-      socket.emit('user:change', {
-        "proximity": "1"
-      });
+      // if redirecting from login, proximity is not yet set
+      // for easy of dev and testing, set proximity
+      if($scope.user.proximity <= 0) {
+        socket.emit('user:change', {
+          "proximity": "1"
+        });
 
-      $scope.user.proximity = 1;
-      $scope.users[$scope.user.name].proximity = 1;
+        $scope.user.proximity = 1;
+        $scope.users[$scope.user.name].proximity = 1;
+      }
 
-      $scope.continue();
     }
 
     $location.url(newUrl);
@@ -106,7 +109,6 @@ function ApproachCtrl($scope, socket, $location) {
      "proximity": "1"
     });
 
-    // TODO fix the way current user and user list is stored
     $scope.user.proximity = 1;
     $scope.users[$scope.user.name].proximity = 1;
 
