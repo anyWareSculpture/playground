@@ -1,4 +1,6 @@
 .col
   h3 Users
     .overflowable
-      p(ng-repeat='user in users') {{ user.name }} {{ user.proximity }}
+      p(ng-repeat='user in users') {{ user.name }} | {{ user.proximity }} | {{ user.handshake }}
+
+  div(handshake)

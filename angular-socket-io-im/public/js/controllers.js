@@ -8,7 +8,8 @@ function AppCtrl($scope, socket, $location, $rootScope) {
 
   $scope.user = {
     name: '',
-    proximity: 0
+    proximity: 0,
+    handshake: false,
   };
   $scope.messages = [];
 
