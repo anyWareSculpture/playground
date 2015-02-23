@@ -44,10 +44,10 @@ and you will be directed back to the initial requested page.
 - ~~Include list of user name, and corresponding proximity in status bar~~
 - ~~FIX send current status of other users when another user logs in, not just on change~~
 - ~~Move status bar into index.jade, present on every page~~
-- Don't want status bar on login page, as won't recieve any login broadcast events unless logged in
-	. Create shared directive for status bar to add it to applicable pages
+- ~~Don't want status bar on login page, as won't recieve any login broadcast events unless logged in
+	. Create shared directive for status bar to add it to applicable pages~~
 - Button to log out / reset proximity
-- BUG listening for logout seems buggy... will sometimes not pick up changes.
+- ~~BUG listening for logout seems buggy... will sometimes not pick up changes.~~
 
 ### Chat box
 - ~~Populate username in messages list on message send~~
@@ -59,6 +59,7 @@ and you will be directed back to the initial requested page.
 	. Note: Redirection takes care of this...can't access other pages without first logging in
 - Clean up controllers.js, seperate into view specific files
 	. Good resource for best practices [here](https://scotch.io/tutorials/angularjs-best-practices-directory-structure)
+	. Current structure is probably fine, the app isnt huge.
 - ~~Do cleanup on "logout"/tab close to remove cyberObjects and update status bars~~
 ...
 - Visualize knock pattern instead of just a message box
