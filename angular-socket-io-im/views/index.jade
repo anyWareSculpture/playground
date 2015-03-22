@@ -1,34 +1,13 @@
 extends layout
 
 block body
-  h1 anyWare Demo
   div(ng-controller='AppCtrl')
+    md-content
+      md-toolbar
+        h2.md-toolbar-tools
+          span anyWare Demo
 
-    div(ng-view)
-
-    //- .col
-    //-   h3 Messages
-    //-   .overflowable
-    //-     p(ng-repeat='message in messages',
-    //-       ng-class='{alert: message.user == "chatroom"}') {{message.user}}: {{message.text}}
-
-    //- .col
-    //-   h3 Users
-    //-   .overflowable
-    //-     p(ng-repeat='user in users') {{user}}
-
-    //- .clr
-    //-   form(ng-submit='sendMessage()')
-    //-     | Message: 
-    //-     input(size='60', ng-model='message')
-    //-     input(type='submit', value='Send')
-
-    //- .clr
-    //-   h3 Change your name
-    //-   p Your current user name is {{name}}
-    //-   form(ng-submit='changeName()')
-    //-     input(ng-model='newName')
-    //-     input(type='submit', value='Change Name')
+      div(ng-view)
 
   script(src='/bower_components/angular/angular.js')
   script(src='/bower_components/angular-route/angular-route.js')
