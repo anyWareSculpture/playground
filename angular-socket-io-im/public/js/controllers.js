@@ -11,35 +11,35 @@ angular.module('myApp.controllers', [])
       // Init
       //=================
 
-      $scope.user = {
+      $rootScope.user = {
         name: '',
         proximity: 0,
         handshake: false,
       };
-      $scope.messages = [];
+      $rootScope.messages = [];
 
 
       // Socket listeners
       // ================
 
       socket.on('init', function (data) {
-        $scope.users = data || {};
+        $rootScope.users = data || {};
       });
 
       socket.on('send:message', function (message) {
-        $scope.messages.push(message);
+        $rootScope.messages.push(message);
       });
 
       socket.on('user:login', function (data) { 
-        $scope.messages.push({ 
+        $rootScope.messages.push({ 
           user: 'chatroom',
           text: 'User ' + data.name + ' has joined.'
         });
-        $scope.users[data.name] = data;
+        $rootScope.users[data.name] = data;
       });
 
       socket.on('user:change', function (data) {
-        $scope.messages.push({ 
+        $rootScope.messages.push({ 
           user: 'chatroom',
           text: 'User ' + data.name + ' proximity is now ' + data.proximity + '.'
         });
@@ -58,7 +58,7 @@ angular.module('myApp.controllers', [])
       });
 
       // Define page flow
-      $scope.continue = function (options) {
+      $rootScope.continue = function (options) {
         options = options || {};
         var url = $location.url();
         var newUrl = '';
