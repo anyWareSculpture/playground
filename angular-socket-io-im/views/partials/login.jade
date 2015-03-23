@@ -1,5 +1,9 @@
-.clr
-  form(ng-submit='login()')
-    | Username: 
-    input(size='60', ng-model='user.name' required="true")
-    input(type='submit', value='Login')
+
+form(ng-submit='login()')
+    section(layout='row')
+        md-input-container(flex)
+            label Username
+            input(ng-model='user.name', required='true', value='username' )
+
+        md-button(type='submit', value='Login')
+            | Login
