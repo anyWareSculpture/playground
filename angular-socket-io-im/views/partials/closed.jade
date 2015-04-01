@@ -1,4 +1,4 @@
-div(layout='row', layout-margin)
+div(layout='row')
 
     md-card(layout, layout-align='start', flex=60)
         md-card-content
@@ -17,7 +17,8 @@ div(layout='row', layout-margin)
                     md-button(type='submit', value='Correct Response').md-primary
                         |   Correct Response
 
-
-    md-card(layout, layout-align='start', flex)
-        md-card-content(sculpture-state)
-        md-card-content(handshake)
+    section(layout=column, layout-align='start', flex)
+        md-card(layout, layout-align='start', flex)
+            md-card-content(sculpture-state)
+        md-card(layout, layout-align='start', flex)
+            md-card-content(handshake)
