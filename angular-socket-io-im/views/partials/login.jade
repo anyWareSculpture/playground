@@ -1,9 +1,9 @@
 
 form(ng-submit='login()')
     section(layout='row')
-        md-input-container(flex)
+        md-input-container
             label Username
-            input(ng-model='user.name', required='true', value='username' )
+            input(ng-model='user.name', required='true', value='username',autofocus)
 
-        md-button(type='submit', value='Login')
+        md-button(type='submit', value='Login').md-primary
             | Login
