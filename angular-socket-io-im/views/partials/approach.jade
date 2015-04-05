@@ -1,4 +1,10 @@
-div(sculpture-state)
-.clr
-    form(ng-submit='approach()')
-        input(type='submit', value='Approach')
+div(layout='row')
+
+    section(layout, layout-align='start', flex=60)
+        md-input-container
+            form(ng-submit='approach()')
+                md-button(type='submit', value='Approach').md-primary
+                    | Approach
+
+    md-card(layout, layout-align='start', flex)
+        md-card-content(sculpture-state)

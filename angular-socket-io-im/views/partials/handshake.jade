@@ -1,2 +1,3 @@
-button(type="button", ng-click="toggleHandshake()")
-  | {{ buttonText || "Send handshake!" }}
+section(layout='row', layout-align='end')
+    md-button(type="button", ng-click="toggleHandshake()").md-raised
+      | {{ buttonText || "Send handshake!" }}

@@ -2,156 +2,160 @@
 
 /* Controllers */
 
-function AppCtrl($scope, socket, $location, $rootScope) {
-  // Init
-  //=================
+angular.module('myApp.controllers', [])
 
-  $scope.user = {
-    name: '',
-    proximity: 0,
-    handshake: false,
-  };
-  $scope.messages = [];
+  .controller(
+    'AppCtrl', 
+    ['$scope', 'socket', '$location', '$rootScope', 
+    function ($scope, socket, $location, $rootScope) {
+      // Init
+      //=================
+
+      $rootScope.user = {
+        name: '',
+        proximity: 0,
+        handshake: false,
+      };
+      $rootScope.messages = [];
 
 
-  // Socket listeners
-  // ================
+      // Socket listeners
+      // ================
 
-  socket.on('init', function (data) {
-    $scope.users = data;
-  });
+      socket.on('init', function (data) {
+        $rootScope.users = data || {};
+      });
 
-  socket.on('send:message', function (message) {
-    $scope.messages.push(message);
-  });
+      socket.on('send:message', function (message) {
+        $rootScope.messages.push(message);
+      });
 
-  socket.on('user:login', function (data) { 
-    $scope.messages.push({ 
-      user: 'chatroom',
-      text: 'User ' + data.name + ' has joined.'
-    });
-    $scope.users[data.name] = data;
-  });
-
-  socket.on('user:change', function (data) {
-    $scope.messages.push({ 
-      user: 'chatroom',
-      text: 'User ' + data.name + ' proximity is now ' + data.proximity + '.'
-    });
-    $scope.users[data.name] = data;
-  });
-
-  socket.on('command', function(data) {
-    if(data === 'open_sesame') {
-      $scope.continue();
-    }
-  });
-
-  socket.on('user:logout', function (data) {
-    // remove user from user list
-    delete $scope.users[data.name]
-  });
-
-  // Define page flow
-  $scope.continue = function (options) {
-    options = options || {};
-    var url = $location.url();
-    var newUrl = '';
-    switch(url) {
-      case '/login'   : newUrl = '/approach'; break;
-      case '/approach': newUrl = '/closed';   break;
-      case '/closed'  : newUrl = '/shadow';   break;
-      case '/shadow'  : newUrl = '/light';    break;
-      case '/light'   : newUrl = '/closed';   break;
-      default         : '/login';             break;
-    }
-
-    // redirect to supplied url
-    if(options.hasOwnProperty('url')) {
-      newUrl = options.url;
-
-      // if redirecting from login, proximity is not yet set
-      // for easy of dev and testing, set proximity
-      if($scope.user.proximity <= 0) {
-        socket.emit('user:change', {
-          "proximity": "1"
+      socket.on('user:login', function (data) { 
+        $rootScope.messages.push({ 
+          user: 'chatroom',
+          text: 'User ' + data.name + ' has joined.'
         });
+        $rootScope.users[data.name] = data;
+      });
 
-        $scope.user.proximity = 1;
-        $scope.users[$scope.user.name].proximity = 1;
-      }
+      socket.on('user:change', function (data) {
+        $rootScope.messages.push({ 
+          user: 'chatroom',
+          text: 'User ' + data.name + ' proximity is now ' + data.proximity + '.'
+        });
+        $scope.users[data.name] = data;
+      });
 
+      socket.on('command', function(data) {
+        if(data === 'open_sesame') {
+          $scope.continue();
+        }
+      });
+
+      socket.on('user:logout', function (data) {
+        // remove user from user list
+        delete $scope.users[data.name]
+      });
+
+      // Define page flow
+      $rootScope.continue = function (options) {
+        options = options || {};
+        var url = $location.url();
+        var newUrl = '';
+        switch(url) {
+          case '/login'   : newUrl = '/approach'; break;
+          case '/approach': newUrl = '/closed';   break;
+          case '/closed'  : newUrl = '/shadow';   break;
+          case '/shadow'  : newUrl = '/light';    break;
+          case '/light'   : newUrl = '/closed';   break;
+          default         : '/login';             break;
+        }
+
+        // redirect to supplied url
+        if(options.hasOwnProperty('url')) {
+          newUrl = options.url;
+
+          // if redirecting from login, proximity is not yet set
+          // for easy of dev and testing, set proximity
+          if($scope.user.proximity <= 0) {
+            socket.emit('user:change', {
+              "proximity": "1"
+            });
+
+            $scope.user.proximity = 1;
+            $scope.users[$scope.user.name].proximity = 1;
+          }
+
+        }
+
+        $location.url(newUrl);
+      };
+
+      $rootScope.hasUser = function() {
+        return $scope.user.name !== '';
+      };
     }
+ ])
 
-    $location.url(newUrl);
-  };
+  .controller('LoginCtrl', ['$scope', 'socket', '$location', '$routeParams', function($scope, socket, $location, $routeParams) {
+    $scope.login = function() {
+      socket.emit('user:login', $scope.user);
 
-  $rootScope.hasUser = function() {
-    return $scope.user.name !== '';
-  };
-}
+      // add to user list
+      $scope.users[$scope.user.name] = $scope.user;
 
+      $scope.continue($routeParams);
+      }
+  }])
 
-function LoginCtrl($scope, socket, $location, $routeParams) {
-  $scope.login = function() {
-    socket.emit('user:login', $scope.user);
+  .controller('ApproachCtrl', ['$scope', 'socket', '$location', function($scope, socket, $location) {
+    $scope.approach = function() {
+      socket.emit('user:change', {
+       "proximity": "1"
+      });
 
-    // add to user list
-    $scope.users[$scope.user.name] = $scope.user;
+      $scope.user.proximity = 1;
+      $scope.users[$scope.user.name].proximity = 1;
 
-    $scope.continue($routeParams);
-  }
-};
+      $scope.continue();
+   }
+  }])
 
-function ApproachCtrl($scope, socket, $location) {
+  .controller('ClosedCtrl', ['$scope', 'socket', '$location', function($scope, socket, $location) {
+    $scope.sendMessage = function (msg) {
+      var message = msg || $scope.message || '';
 
-  $scope.approach = function() {
-    socket.emit('user:change', {
-     "proximity": "1"
-    });
+      socket.emit('send:message',
+        JSON.stringify(message)
+      );
 
-    $scope.user.proximity = 1;
-    $scope.users[$scope.user.name].proximity = 1;
+      // add the message to our model locally
+      $scope.messages.push({
+        user: $scope.user.name,
+        text: message
+      })
 
-    $scope.continue();
-  }
-};
+      // clear message box
+      $scope.message = '';
+    };
 
-function ClosedCtrl($scope, socket, $location) {
+    $scope.respondCorrect = function() {
+      $scope.sendMessage(
+        { 'knockpattern': [1000, 500]}
+      );
+    };
 
-  $scope.sendMessage = function (msg) {
-    var message = msg || $scope.message || '';
+    $scope.respondIncorrect = function() {
+      $scope.sendMessage(
+        { 'knockpattern': [500, 500, 500]}
+      );
+    };
+  }])
 
-    socket.emit('send:message',
-      JSON.stringify(message)
-    );
+  .controller('ShadowCtrl', ['$scope', 'socket', '$location', function($scope, socket, $location) {
 
-    // add the message to our model locally
-    $scope.messages.push({
-      user: $scope.user.name,
-      text: message
-    })
+  }])
 
-    // clear message box
-    $scope.message = '';
-  };
+  .controller('LightCtrl', ['$scope', 'socket', '$location', function($scope, socket, $location) {
 
-  $scope.respondCorrect = function() {
-    $scope.sendMessage(
-      { 'knockpattern': [1000, 500]}
-    );
-  };
-
-  $scope.respondIncorrect = function() {
-    $scope.sendMessage(
-      { 'knockpattern': [500, 500, 500]}
-    );
-  };
-};
-
-function ShadowCtrl($scope, socket, $location) {
-};
-
-function LightCtrl($scope, socket, $location) {
-};
-
+  }]);

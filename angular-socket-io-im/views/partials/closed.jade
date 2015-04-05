@@ -1,13 +1,24 @@
-div(sculpture-state)
-.col
-    h3 Messages
-        .overflowable
-            p(ng-repeat='message in messages',
-            ng-class='{alert: message.user == "chatroom"}') {{message.user}}: {{message.text}}
+div(layout='row')
 
-    .clr
-        form(ng-submit='respondCorrect()')
-            input(type='submit', value='Correct Response')
+    md-card(layout, layout-align='start', flex=60)
+        md-card-content
+            h2 Closed State
 
-        form(ng-submit='respondIncorrect()')
-            input(type='submit', value='Incorrect Response')
+            div(style="height: 300px; overflow-y: auto;")
+                p(ng-repeat='message in messages',
+                ng-class='{alert: message.user == "chatroom"}') {{message.user}}: {{message.text}}
+
+            section(layout='row', layout-margin, layout-align='end')
+                form(ng-submit='respondIncorrect()')
+                    md-button(type='submit', value='Incorrect Response')
+                        | Incorrect Response
+
+                form(ng-submit='respondCorrect()')
+                    md-button(type='submit', value='Correct Response').md-primary
+                        |   Correct Response
+
+    section(layout=column, layout-align='start', flex)
+        md-card(layout, layout-align='start', flex)
+            md-card-content(sculpture-state)
+        md-card(layout, layout-align='start', flex)
+            md-card-content(handshake)

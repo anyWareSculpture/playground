@@ -36,36 +36,3 @@ in a new terminal tab, and navigate to http://127.0.0.1:8080/debug?port=5858.
 For ease of development and testing, navigate to any state. You will be
 redirected to the login page. After logging in, your proximity will be set,
 and you will be directed back to the initial requested page.
-
-## TODO
-
-### Status Bar
-- ~~FIX logged in user state isn't sent from cyberObject after user status change~~
-- ~~Include list of user name, and corresponding proximity in status bar~~
-- ~~FIX send current status of other users when another user logs in, not just on change~~
-- ~~Move status bar into index.jade, present on every page~~
-- ~~Don't want status bar on login page, as won't recieve any login broadcast events unless logged in
-	. Create shared directive for status bar to add it to applicable pages~~
-- Button to log out / reset proximity
-- ~~BUG listening for logout seems buggy... will sometimes not pick up changes.~~
-
-### Chat box
-- ~~Populate username in messages list on message send~~
-	~~(fixing status bar should take care of this)~~
-
-### General
-- ~~Enforce login before accessing remaining app flow~~
-- ~~Disable interaction if proximity is not set~~ 
-	. Note: Redirection takes care of this...can't access other pages without first logging in
-- Clean up controllers.js, seperate into view specific files
-	. Good resource for best practices [here](https://scotch.io/tutorials/angularjs-best-practices-directory-structure)
-	. Current structure is probably fine, the app isnt huge.
-- ~~Do cleanup on "logout"/tab close to remove cyberObjects and update status bars~~
-...
-- Visualize knock pattern instead of just a message box
-- Make everything pretty
-- 'Open Sesame' transition
-- Clean up jsonserver to 'broadcast' instead of emit for each for efficiency.
-- Clean up the 'open_sesame' to indicate which state you should be
-switching to. This takes care of resyncing potentially out of sync users.
-(Do this later when server has an idea of different game states.)
