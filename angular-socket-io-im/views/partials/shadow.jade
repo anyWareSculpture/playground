@@ -1,5 +1,12 @@
-div(sculpture-state)
+div(layout='row')
 
-.clr
-    form(ng-submit='continue()')
-        input(type='submit', value='Continue')
+    md-card(layout, layout-align='start', flex=60)
+        md-card-content
+            form(ng-submit='continue()')
+                input(type='submit', value='Continue')
+
+    section(layout=column, layout-align='start', flex)
+        md-card(layout, layout-align='start', flex)
+            md-card-content(sculpture-state)
+        md-card(layout, layout-align='start', flex)
+            md-card-content(handshake)
