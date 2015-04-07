@@ -6,8 +6,8 @@ angular.module('myApp.controllers', [])
 
   .controller(
     'AppCtrl', 
-    ['$scope', 'socket', '$location', '$rootScope', 
-    function ($scope, socket, $location, $rootScope) {
+    ['$scope', 'socket', '$location', '$rootScope', '$document', '$timeout',
+    function ($scope, socket, $location, $rootScope, $document, $timeout) {
       // Init
       //=================
 
@@ -17,7 +17,6 @@ angular.module('myApp.controllers', [])
         handshake: false,
       };
       $rootScope.messages = [];
-
 
       // Socket listeners
       // ================
@@ -45,6 +44,10 @@ angular.module('myApp.controllers', [])
         });
         $scope.users[data.name] = data;
       });
+
+      socket.on('state:change'), function (data) {
+        $scope.continue(data);
+      }
 
       socket.on('command', function(data) {
         if(data === 'open_sesame') {
@@ -94,6 +97,18 @@ angular.module('myApp.controllers', [])
       $rootScope.hasUser = function() {
         return $scope.user.name !== '';
       };
+
+      $rootScope.$watchCollection(
+        function() {
+          return $rootScope.messages;
+        },
+        function(newVal, oldVal) {
+          var msgs = document.getElementById('messages');
+          if (msgs) {
+            $timeout(function () { msgs.scrollTop = msgs.scrollHeight  }, 0, false);
+          }
+        }
+      );
     }
  ])
 

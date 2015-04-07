@@ -4,7 +4,7 @@ div(layout='row')
         md-card-content
             h2 Closed State
 
-            div(style="height: 300px; overflow-y: auto;")
+            div(style="height: 300px; overflow-y: auto;")#messages
                 p(ng-repeat='message in messages',
                 ng-class='{alert: message.user == "chatroom"}') {{message.user}}: {{message.text}}
 
