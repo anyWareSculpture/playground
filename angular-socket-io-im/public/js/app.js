@@ -1,8 +1,14 @@
 'use strict';
 
+var underscore = angular.module('underscore', []);
+underscore.factory('_', function() {
+  return window._;
+});
+
 // Declare app level module which depends on filters, and services
 var app = angular.module('myApp', 
   [
+  'underscore',
   'ngRoute',
   'ngMaterial',
   'myApp.filters',
