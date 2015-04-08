@@ -204,7 +204,8 @@ function objectReceived(cyberobj, data) {
             // obj.write(cyberobj.name + " has joined.\n");
             obj.write({ eventName: 'user:login', eventData: {
               proximity: cyberobj.proximity || 0,
-              name: cyberobj.name
+              name: cyberobj.name,
+              handshake: cyberobj.handshake || false
               
             }});
           }
@@ -229,6 +230,26 @@ function objectReceived(cyberobj, data) {
           }
         });
         if (Game.game) Game.game.proximity(cyberobj);
+      }
+      else if (message.hasOwnProperty('handshake')) {
+        debug("Got handshake: " + JSON.stringify(message));
+        cyberobj.handshake = message.handshake;
+        if (cyberobj.handshake > 0) {
+          debug("Sending Handshake!");
+        }
+        else {
+          debug("No Handshake");
+        }
+        CyberObject.forEach(function(name, obj) {
+          if (obj != cyberobj) {
+            // obj.write(cyberobj.name + " proximity is now " + cyberobj.proximity + "\n");
+            obj.write({eventName: 'user:change', eventData: {
+              name: cyberobj.name,
+              proximity: cyberobj.proximity || 0,
+              handshake: cyberobj.handshake || false
+            }});
+          }
+        });
       }
       else if (message.hasOwnProperty('knockpattern')) {
         debug("Got knock pattern");
@@ -263,8 +284,8 @@ function getAllObjects() {
   var ret = {};
   CyberObject.forEach(function(name, obj) {
     ret[name] = _.defaults(
-      _.pick(obj, 'name', 'proximity'), 
-      {name: '', proximity: 0}
+      _.pick(obj, 'name', 'proximity', 'handshake'),
+      {name: '', proximity: 0, handshake: false}
     );
   });
   return ret;

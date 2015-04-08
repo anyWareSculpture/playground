@@ -38,10 +38,6 @@ angular.module('myApp.controllers', [])
       });
 
       socket.on('user:change', function (data) {
-        $rootScope.messages.push({ 
-          user: 'chatroom',
-          text: 'User ' + data.name + ' proximity is now ' + data.proximity + '.'
-        });
         $scope.users[data.name] = data;
       });
 

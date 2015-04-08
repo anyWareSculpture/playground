@@ -13,7 +13,7 @@ module.exports = function (socket) {
   });
 
   socket.on('user:change', function(data) {
-    // data = { name: '', proximity: 0 }
+    // data = { name: '', proximity: 0, handshake: 0 }
     jsonserver.objectReceived(currobj, JSON.stringify(data) + "\n");
   });
 

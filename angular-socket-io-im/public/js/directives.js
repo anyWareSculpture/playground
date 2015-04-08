@@ -17,11 +17,15 @@ angular.module('myApp.directives', []).
   }).
 
   directive('handshake', function() {
-    function Controller($scope, $element, $attrs) {
+    function Controller($scope, $element, $attrs, socket) {
       $scope.toggleHandshake = function() {
           var sendingHandshake = this.user.handshake,
               newState = !sendingHandshake;
-          // emit handshake event,
+
+          // emit handshake toggle
+          socket.emit('user:change', {
+           "handshake": newState
+          });
 
           // update user state,
           var username = this.user.name;
@@ -33,9 +37,6 @@ angular.module('myApp.directives', []).
           } else {
             $scope.buttonText = "Send handshake!";
           }
-
-          console.log('toggleHandshake');
-          console.log($scope.user.handshake);
       };
     };
     // link the $scope to the DOM element and UI events.
