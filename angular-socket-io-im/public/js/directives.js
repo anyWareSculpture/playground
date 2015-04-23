@@ -19,29 +19,36 @@ angular.module('myApp.directives', []).
   directive('handshake', function() {
     function Controller($scope, $element, $attrs, socket) {
       $scope.toggleHandshake = function() {
-          var sendingHandshake = this.user.handshake,
-              newState = !sendingHandshake;
+          var sendingHandshake = $scope.user.handshake;
 
           // emit handshake toggle
           socket.emit('user:change', {
-           "handshake": newState
+           "handshake": sendingHandshake
           });
 
-          // update user state,
-          var username = this.user.name;
-          this.user.handshake = newState;
-          this.users[username].handshake = newState;
-
-          if (newState) {
-            $scope.buttonText = "Revoke handshake!";
+          if (sendingHandshake) {
+            $scope.buttonText = "Sending Handshake!";
           } else {
             $scope.buttonText = "Send handshake!";
           }
+          $scope.hasHandshakeSuccess();
+      };
+      $scope.hasHandshakeSuccess = function() {
+          var success = _.filter(this.users, function (user) {
+            return user.handshake;
+          });
+
+          $scope.hasHandshake = (success.length > 1);
+          return $scope.hasHandshake;
       };
     };
     // link the $scope to the DOM element and UI events.
     function link($scope, element, attributes, controllers) {
-
+      $scope.$watch(function() { return $scope.user.handshake; }, function(newVal, oldVal) {
+        if (newVal !== oldVal) {
+          $scope.toggleHandshake();
+        }
+      });
     };
     return {
       controller: Controller,
