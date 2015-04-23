@@ -54,7 +54,8 @@ var app = angular.module('myApp',
   $rootScope.$on( "$routeChangeStart", function(event, next, current) {
     // enforce login before viewing other pages
     if ( !$rootScope.hasUser()  &&
-      $location.path() !== '/login') {
+      $location.path() !== '/login' &&
+      $location.path() !== '/') {
         var qs = $location.search();
         if($location.hasOwnProperty('name')) {
           // if query string has a name, autologin and set proximity
