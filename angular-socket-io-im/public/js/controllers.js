@@ -15,6 +15,7 @@ angular.module('myApp.controllers', [])
         name: '',
         proximity: 0,
         handshake: false,
+        color: '#000'
       };
       $rootScope.messages = [];
 

@@ -285,7 +285,7 @@ function getAllObjects() {
   CyberObject.forEach(function(name, obj) {
     ret[name] = _.defaults(
       _.pick(obj, 'name', 'proximity', 'handshake'),
-      {name: '', proximity: 0, handshake: false}
+      {name: '', proximity: 0, handshake: false, color: '#000'}
     );
   });
   return ret;

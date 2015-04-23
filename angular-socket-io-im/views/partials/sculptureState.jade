@@ -1,5 +1,7 @@
 div
     h3 Users
-        .overflowable
-          p(ng-repeat='user in users') {{ user.name }} | {{ user.proximity }} | {{ user.handshake }}
+    .overflowable
+      div(ng-repeat='user in users').user 
+        div(class="proximity_{{ user.proximity }}", style="background-color: {{ user.color }}").circle
+        {{ user.name }}
 
