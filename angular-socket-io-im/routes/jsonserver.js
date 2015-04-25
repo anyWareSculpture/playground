@@ -88,6 +88,13 @@ function CyberObject(socket) {
   this.name = null;
   this.socket = socket;
   this.currdata = "";
+  this.colors = [
+    'orange',
+    'blue',
+    'green',
+    'red'
+  ];
+  this.color = null;
 }
 
 CyberObject.allobjects = {};
@@ -150,6 +157,23 @@ CyberObject.prototype.read = function(data) {
   return null;
 }
 
+CyberObject.prototype.assignColor = function() {
+  var usedColors = [];
+  _.chain(CyberObject.allobjects).values().each(function (obj) {
+    if (obj.color) {
+      usedColors.push(obj.color);
+    }
+  });
+  var freeColors = _.difference(this.colors, usedColors);
+
+  if (!freeColors) {
+    console.log("Warning: insufficient number of colors. Assigning as default color.");
+    this.color = '#000'
+    return;
+  }
+  this.color = _.first(freeColors);
+}
+
 var anonclients = [];
 
 var server = net.createServer(function (socket) {
@@ -192,6 +216,7 @@ function objectReceived(cyberobj, data) {
       if (message.hasOwnProperty('login')) {
         debug("Got login: " + JSON.stringify(message));
         cyberobj.name = message.login;
+        cyberobj.assignColor();
         CyberObject.addObject(cyberobj);
         anonclients.remove(cyberobj);
 
@@ -200,15 +225,15 @@ function objectReceived(cyberobj, data) {
         }
 
         CyberObject.forEach(function(name, obj) {
-          if (obj != cyberobj) {
+          // if (obj != cyberobj) {
             // obj.write(cyberobj.name + " has joined.\n");
             obj.write({ eventName: 'user:login', eventData: {
               proximity: cyberobj.proximity || 0,
               name: cyberobj.name,
               handshake: cyberobj.handshake || false,
-              color: '#000'
+              color: cyberobj.color
             }});
-          }
+          // }
         });
       }
       else if (message.hasOwnProperty('proximity')) {
@@ -285,8 +310,8 @@ function getAllObjects() {
   var ret = {};
   CyberObject.forEach(function(name, obj) {
     ret[name] = _.defaults(
-      _.pick(obj, 'name', 'proximity', 'handshake'),
-      {name: '', proximity: 0, handshake: false, color: '#000'}
+      _.pick(obj, 'name', 'proximity', 'handshake', 'color'),
+      {name: '', proximity: 0, handshake: false}
     );
   });
   return ret;
