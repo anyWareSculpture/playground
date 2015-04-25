@@ -205,8 +205,8 @@ function objectReceived(cyberobj, data) {
             obj.write({ eventName: 'user:login', eventData: {
               proximity: cyberobj.proximity || 0,
               name: cyberobj.name,
-              handshake: cyberobj.handshake || false
-              
+              handshake: cyberobj.handshake || false,
+              color: '#000'
             }});
           }
         });
@@ -225,7 +225,8 @@ function objectReceived(cyberobj, data) {
             // obj.write(cyberobj.name + " proximity is now " + cyberobj.proximity + "\n");
             obj.write({eventName: 'user:change', eventData: {
               name: cyberobj.name,
-              proximity: cyberobj.proximity || 0
+              proximity: cyberobj.proximity || 0,
+
             }});
           }
         });

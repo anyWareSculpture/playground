@@ -6,8 +6,8 @@ angular.module('myApp.controllers', [])
 
   .controller(
     'AppCtrl', 
-    ['$scope', 'socket', '$location', '$rootScope', '$document', '$timeout',
-    function ($scope, socket, $location, $rootScope, $document, $timeout) {
+    ['$scope', 'socket', '$location', '$rootScope', '$document', '$timeout', '_',
+    function ($scope, socket, $location, $rootScope, $document, $timeout, _) {
       // Init
       //=================
 
@@ -39,7 +39,7 @@ angular.module('myApp.controllers', [])
       });
 
       socket.on('user:change', function (data) {
-        $scope.users[data.name] = data;
+        _.extend($scope.users[data.name], data);
       });
 
       socket.on('state:change'), function (data) {
