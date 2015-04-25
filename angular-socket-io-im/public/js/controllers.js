@@ -31,10 +31,6 @@ angular.module('myApp.controllers', [])
       });
 
       socket.on('user:login', function (data) { 
-        $rootScope.messages.push({ 
-          user: 'chatroom',
-          text: 'User ' + data.name + ' has joined.'
-        });
         $rootScope.users[data.name] = data;
       });
 

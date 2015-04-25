@@ -60,8 +60,8 @@ var app = angular.module('myApp',
         if($location.hasOwnProperty('name')) {
           // if query string has a name, autologin and set proximity
           // then continue to originally requested page
-          $rootScope.login($location.search('name')); //TODO
-          $rootScope.approach(); //TODO
+          $rootScope.login($location.search('name'));
+          $rootScope.approach();
         } else {
           // if no login name in query string, redirect to login
           // with intended path as the query string
