@@ -216,6 +216,7 @@ function objectReceived(cyberobj, data) {
       if (message.hasOwnProperty('login')) {
         debug("Got login: " + JSON.stringify(message));
         cyberobj.name = message.login;
+        cyberobj.proximity = message.proximity || 0;
         cyberobj.assignColor();
         CyberObject.addObject(cyberobj);
         anonclients.remove(cyberobj);

@@ -74,18 +74,6 @@ angular.module('myApp.controllers', [])
         // redirect to supplied url
         if(options.hasOwnProperty('url')) {
           newUrl = options.url;
-
-          // if redirecting from login, proximity is not yet set
-          // for easy of dev and testing, set proximity
-          if($scope.user.proximity <= 0) {
-            socket.emit('user:change', {
-              "proximity": "1"
-            });
-
-            $scope.user.proximity = 1;
-            $scope.users[$scope.user.name].proximity = 1;
-          }
-
         }
 
         $location.url(newUrl);
@@ -111,6 +99,12 @@ angular.module('myApp.controllers', [])
 
   .controller('LoginCtrl', ['$scope', 'socket', '$location', '$routeParams', function($scope, socket, $location, $routeParams) {
     $scope.login = function() {
+      if ($routeParams.url && 
+          $routeParams.url !== '/login' &&
+          $routeParams.url !== '/approach'
+      ) {
+        $scope.user.proximity = 1;
+      }
       socket.emit('user:login', $scope.user);
 
       // add to user list

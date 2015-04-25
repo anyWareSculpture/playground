@@ -8,7 +8,8 @@ module.exports = function (socket) {
   socket.on('user:login', function(data) {
     // data = { name: '' }
     jsonserver.objectReceived(currobj, JSON.stringify({
-      "login" : data.name
+      "login" : data.name,
+      "proximity" : data.proximity
     }) + "\n");
   });
 
