@@ -144,6 +144,7 @@ void setup() {
 
 void loop() { 
   SimonDictates();
+  reset();
   lastActionTime = millis();
   Serial.println("Waiting...");
   while (millis() - lastActionTime < wait) {
@@ -213,10 +214,17 @@ void SimonWaits() {
 
 void wrong() {
   setAllColors(BLACK);
-  setComboColors(RED);
+
+  if (currSensor >= 0) {
+    irpixels[currSensor].setColor(RED);
+    pixels.show();
+  }
+  //  setComboColors(RED);
+
   delay(1000);
   setAllColors(BLACK);
   reset();
+  lastActionTime = 0;
 }
 
 void right() {
