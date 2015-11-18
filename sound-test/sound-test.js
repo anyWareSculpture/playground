@@ -1,16 +1,81 @@
+import {Sound, VCFSound} from './audio-api';
 var ADSR = require('adsr');
+const Tuna = require('tunajs');
 
-var context;
+let context;
 var sounds = {};
 var effects = {};
 var FADE_TIME = 5;
+var destination;
+var tuna;
+var recorder;
+
+
+function startRecording(button) {
+  recorder && recorder.record();
+  button.disabled = true;
+  button.nextElementSibling.disabled = false;
+  console.log('Recording...');
+}
+
+function stopRecording(button) {
+  recorder && recorder.stop();
+  button.disabled = true;
+  button.previousElementSibling.disabled = false;
+  console.log('Stopped recording.');
+  
+  // create WAV download link using audio data blob
+  createDownloadLink();
+ 
+//  recorder.clear();
+}
+
+function createDownloadLink() {
+  recorder && recorder.exportWAV(function(blob) {
+    console.log('WAV created');
+    var url = URL.createObjectURL(blob);
+    var li = document.createElement('li');
+    var au = document.createElement('audio');
+    var hf = document.createElement('a');
+    
+    au.controls = true;
+    au.src = url;
+    hf.href = url;
+    hf.download = new Date().toISOString() + '.wav';
+    hf.innerHTML = hf.download;
+    li.appendChild(au);
+    li.appendChild(hf);
+    recordingslist.appendChild(li);
+  });
+}
 
 window.onload = function() {
 
   console.log('Starting sound-test');
 
   initContext();
-  var tuna = new Tuna(context);
+
+  var compressor = context.createDynamicsCompressor();
+  compressor.threshold.value = 0;
+  compressor.connect(context.destination);
+  destination = compressor;
+  recorder = new Recorder(compressor);
+ 
+
+  $('#record').click(startRecording.bind(null, $('#record')[0]));
+  $('#stop').click(stopRecording.bind(null, $('#stop')[0]));
+
+  tuna = new Tuna(context);
+
+  effects.lfofilter = function(sound) {
+    sound.lfofilter = true;
+    return true;
+  }
+
+  effects.oscillator = function(sound) {
+    sound.oscillator = true;
+    return true;
+  }
 
   effects.envelope = function(sound) {
     sound.envelope = true;
@@ -87,12 +152,16 @@ window.onload = function() {
 
   effects.tremolo = function() {
     return new tuna.Tremolo({
-      intensity: 0.3,    //0 to 1
-      rate: 5,         //0.001 to 8
+      intensity: 1,    //0 to 1
+      rate: 50,         //0.001 to 8
       stereoPhase: 0,    //0 to 180
       bypass: 0
     });
   }
+
+  addButton(new Sound({url:'sounds/G01_LED_04.wav'}));
+  addButton(new Sound({url:'sounds/Pulse_Amb_Loop.wav', loop: true, fadeIn: 3}));
+  addButton(new VCFSound({url:'sounds/Pulse_Amb_Loop.wav', loop: true, fadeIn: 3}));
 
   addSound('sounds/Pulse_Amb_Loop.wav', {loop: true, fade: true});
   addSound('sounds/Pulse_Amb_Loop.wav', {loop: true, fade: true, effects: ['wahwah', 'lowpass']});
@@ -100,19 +169,28 @@ window.onload = function() {
   addSound('sounds/Pulse_Amb_Loop.wav', {loop: true, fade: true, effects: ['lowpass']});
   addSound('sounds/Pulse_Amb_Loop.wav', {loop: true, fade: true, effects: ['highpass']});
   addSound('sounds/Pulse_Amb_Loop.wav', {loop: true, fade: true, effects: ['tremolo']});
-  addSound('sounds/Pulse_Amb_Loop.wav', {loop: true, fade: true, effects: ['delay']});
+  addSound('sounds/Pulse_Amb_Loop.wav', {loop: true, fade: true, effects: ['lfofilter']});
+  addSound("sounds/Pulse_Amb+Filter.wav", {loop: true, fade: true});
   addSound('sounds/Pulse_Amb_Loop.wav', {effects: ['envelope']});
-  addSound('sounds/LED_01.wav');
-  addSound('sounds/LED_01.wav', {effects: ['wahwah', 'highpass']});
-  addSound('sounds/LED_02.wav', {effects: ['convolver']});
-  addSound('sounds/LED_03.wav', {effects: ['delay']});
-  addSound('sounds/LED_04.wav');
-  addSound('sounds/LED_05.wav');
-  addSound('sounds/LED_06.wav');
-  addSound('sounds/LED_07.wav');
-  addSound('sounds/LED_08.wav');
-  addSound('sounds/LED_09.wav');
-  addSound('sounds/LED_10.wav');
+  addSound('sounds/G01_Negative_01.wav');
+  addSound('sounds/G01_Success_01.wav');
+  addSound('sounds/G01_LED_01.wav', {loop: true});
+  addSound('sounds/G01_LED_01.wav', {effects: ['wahwah', 'highpass']});
+  addSound('sounds/G01_LED_02.wav', {effects: ['convolver']});
+  addSound('sounds/G01_LED_03.wav', {effects: ['delay']});
+  addSound('sounds/G01_LED_04.wav');
+  addSound('sounds/G01_LED_05.wav');
+  addSound('sounds/G01_LED_06.wav');
+  addSound('sounds/G01_LED_07.wav');
+  addSound('sounds/G01_LED_08.wav');
+  addSound('sounds/G01_LED_09.wav');
+  addSound('sounds/G01_LED_10.wav');
+  addSound('Test.osc', {loop: true, effects: ['oscillator']});
+}
+
+function addSound2(options) {
+  const sound = new Sound(options);
+  addButton(sound);
 }
 
 function addSound(url, options) {
@@ -126,7 +204,7 @@ function addSound(url, options) {
 
   var gain = context.createGain();
   sound.gain = gain;
-  gain.connect(context.destination);
+  gain.connect(destination);
   var headnode = gain;
   if (options.effects) {
     options.effects.slice(0).reverse().forEach(function(effect) {
@@ -135,6 +213,8 @@ function addSound(url, options) {
         effectnode.connect(headnode);
         headnode = effectnode;
       }
+
+      if (effect === 'oscillator') sound.source = effectnode;
     });
     sound.effects = options.effects;
   }
@@ -145,25 +225,67 @@ function addSound(url, options) {
   
   addButton(sound);
 
-  loadSound(sound, function(err, soundBuffer, sound) {
-    if (err) return console.log(err);
-    sound.buffer = soundBuffer;
-  });
+  if (suffix(sound.url).toLowerCase() === 'wav') {
+    loadSound(sound, function(err, soundBuffer, sound) {
+      if (err) return console.log(err);
+      sound.buffer = soundBuffer;
+    });
+  }
 }
 
 function playSound(sound) {
+
+  if (sound instanceof Sound) {
+    return;
+  }
+
   console.log('playing ' + sound.name + '...');  
+  var headnode = sound.headnode;
 
   if (sound.fade) {
     sound.gain.gain.setValueAtTime(0, context.currentTime);
     sound.gain.gain.linearRampToValueAtTime(1,context.currentTime + FADE_TIME);
   }
 
-  var soundSource = context.createBufferSource();
-  soundSource.buffer = sound.buffer;
-  soundSource.loop = sound.loop;
+  if (sound.oscillator) {
+    var osc = context.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.value = 50;
+    osc.connect(sound.headnode);
+    sound.source = osc;
+  }
 
-  soundSource.connect(sound.headnode);
+  if (sound.lfofilter) {
+    var lowpass = new tuna.Filter({
+      frequency: 2200, // 
+      Q: 2, //0.001 to 100
+      gain: 0, //-40 to 40
+      filterType: "lowpass", //lowpass, highpass, bandpass, lowshelf, highshelf, peaking, notch, allpass
+      bypass: 0
+    });
+    lowpass.connect(sound.headnode);
+
+    var lfogain = context.createGain();
+    lfogain.gain.value = 2000;
+
+    var lfo = context.createOscillator();
+    lfo.type = 'sine';
+    lfo.frequency.value = 0.333;
+    lfogain.connect(lowpass.filter.frequency);
+    lfo.connect(lfogain);
+    lfo.start(context.currentTime);
+    
+    headnode = lowpass;
+  }
+
+  if (sound.buffer) {
+    var soundSource = context.createBufferSource();
+    soundSource.buffer = sound.buffer;
+    soundSource.loop = sound.loop;
+    //  soundSource.playbackRate.value = 10;
+    soundSource.connect(headnode);
+    sound.source = soundSource;
+  }
 
   if (sound.envelope) {
     var adsr = ADSR(context);
@@ -176,11 +298,10 @@ function playSound(sound) {
     sound.envelope = adsr;
     sound.envelope.start(context.currentTime);
   }
-  soundSource.start(context.currentTime);
-  sound.source = soundSource;
+  sound.source.start(context.currentTime);
   if (sound.envelope) {
     var stopAt = adsr.stop(context.currentTime + 1.1);
-    soundSource.stop(stopAt);
+    sound.source.stop(stopAt);
   }
 }
 
@@ -190,6 +311,8 @@ function stopSound(sound) {
     sound.gain.gain.cancelScheduledValues(context.currentTime);
     sound.gain.gain.setValueAtTime(volume, context.currentTime);
     sound.gain.gain.linearRampToValueAtTime(0,context.currentTime + volume*FADE_TIME);
+    sound.gain.gain.setValueAtTime(1, context.currentTime + volume*FADE_TIME);
+    sound.source.stop(context.currentTime + volume*FADE_TIME);
   }
   else {
     if (sound.source) sound.source.stop();
@@ -202,7 +325,28 @@ function basename(str) {
     return str.substr(0,str.lastIndexOf('.'));
 }
 
+function suffix(str) {
+    return str.substr(str.lastIndexOf('.')+1);
+}
+
 function addButton(sound) {
+  if (sound instanceof Sound) {
+    if (sound.loop) {
+      var checkbox = $('<input type="checkbox"/>').change(function () {
+        if (checkbox.is(':checked')) sound.play();
+        else sound.stop();
+      });
+      var button = $('<button/>').text(sound.name).click(function () {
+        checkbox.click();
+      });
+    }
+    else {
+      var button = $('<button/>').text(sound.name).click(() => sound.play());
+    }
+    var row = $('<tr><td></td></tr>').children().append(checkbox).append(button).end();
+    $('#buttons').append(row);
+    return;
+  }
   if (sound.loop) {
     var checkbox = $('<input type="checkbox"/>').change(function () {
     });

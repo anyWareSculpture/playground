@@ -14,6 +14,6 @@
   ],
   "dependencies": {
     "jquery": "~2.1.4",
-    "tuna": "Theodeus/tuna"
+    "recorderjs": "~0.0.0"
   }
 }

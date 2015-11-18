@@ -5,9 +5,12 @@
   "main": "sound-test.js",
   "dependencies": {
     "adsr": "^1.0.0",
-    "gulp": "^3.9.0"
+    "gulp": "^3.9.0",
+    "tunajs": "^0.4.2"
   },
   "devDependencies": {
+    "babel-preset-es2015": "^6.1.18",
+    "babelify": "^7.2.0",
     "browser-sync": "^2.9.12",
     "browserify": "^12.0.1",
     "gulp": "^3.9.0",
