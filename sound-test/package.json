@@ -6,6 +6,7 @@
   "dependencies": {
     "adsr": "^1.0.0",
     "gulp": "^3.9.0",
+    "promise-decode-audio-data": "^0.2.0",
     "tunajs": "^0.4.2"
   },
   "devDependencies": {

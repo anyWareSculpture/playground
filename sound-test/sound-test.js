@@ -159,9 +159,9 @@ window.onload = function() {
     });
   }
 
-  addButton(new Sound({url:'sounds/G01_LED_04.wav'}));
-  addButton(new Sound({url:'sounds/Pulse_Amb_Loop.wav', loop: true, fadeIn: 3}));
-  addButton(new VCFSound({url:'sounds/Pulse_Amb_Loop.wav', loop: true, fadeIn: 3}));
+  add(new Sound({url:'sounds/G01_LED_04.wav'}));
+  add(new Sound({url:'sounds/Pulse_Amb_Loop.wav', loop: true, fadeIn: 3}));
+  add(new VCFSound({url:'sounds/Pulse_Amb_Loop.wav', loop: true, fadeIn: 3}));
 
   addSound('sounds/Pulse_Amb_Loop.wav', {loop: true, fade: true});
   addSound('sounds/Pulse_Amb_Loop.wav', {loop: true, fade: true, effects: ['wahwah', 'lowpass']});
@@ -186,11 +186,6 @@ window.onload = function() {
   addSound('sounds/G01_LED_09.wav');
   addSound('sounds/G01_LED_10.wav');
   addSound('Test.osc', {loop: true, effects: ['oscillator']});
-}
-
-function addSound2(options) {
-  const sound = new Sound(options);
-  addButton(sound);
 }
 
 function addSound(url, options) {
@@ -329,6 +324,12 @@ function suffix(str) {
     return str.substr(str.lastIndexOf('.')+1);
 }
 
+function add(sound) {
+  sound.load().then(() => {
+    addButton(sound);
+  });
+}
+
 function addButton(sound) {
   if (sound instanceof Sound) {
     if (sound.loop) {
@@ -368,7 +369,7 @@ function addButton(sound) {
     });
   }
   var row = $('<tr><td></td></tr>').children().append(checkbox).append(button).end();
-
+  
   if (sound.loop) {
     row.append($('<button>fadeIn</button>').click(function() {
       if (!checkbox.is(':checked')) {
@@ -385,14 +386,14 @@ function addButton(sound) {
       }
     }));
   }
-
+  
   if (sound.effects) {
     var effectelem = row.append($('<span>Effects: </span>'));
     sound.effects.forEach(function(effect) {
       effectelem.append(effect + " ");
     });
   }
-
+  
   $('#buttons').append(row);
 }
 

@@ -1,41 +1,57 @@
 const assert = require('assert');
 const path = require('path');
+const fs = require('fs');
+require('promise-decode-audio-data');
 
 // FIXME: Defer this to window.onload() ?
 const context = initContext();
 
+let isNode = false;
+
 export class Sound {
   constructor({ url, loop = false, fadeIn = 0, fadeOut = fadeIn, name = path.basename(url, '.wav') } = {}) {
 
-    assert(url && path.extname(url).toLowerCase() === '.wav');
+    assert(url);
 
     this.url = url;
     this.loop = loop;
     this.fadeIn = fadeIn;
     this.fadeOut = fadeOut;
     this.name = name;
-
     this.gain = context.createGain();
-    this.gain.connect(context.destination);
+    if (!isNode) this.gain.connect(context.destination);
     this.head = this.gain;
-    
-    this.load();
   }
 
+  /**
+   *  Returns a promise to fully load all needed assets for this sound
+   */
   load() {
-    const request = new XMLHttpRequest();
-    request.open("GET", this.url, true);
-    request.responseType = "arraybuffer";
-    
-    // Our asynchronous callback
-    request.onload = () => {
-      console.log('loaded');
-      context.decodeAudioData(request.response, 
-                              soundBuffer => this.buffer = soundBuffer, 
-                              err => console.log(err));
-    }
-    
-    request.send();
+    console.log('loading ' + this.url);
+    // FIXME: Node support:
+    //    if (isNode) fetch = promisify(fs.readFile)(__dirname + '/../' + this.url).then(buffer => buffer);
+
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', this.url, true);
+      xhr.responseType = 'arraybuffer';
+      xhr.onload = e => {
+        if (xhr.status == 200) resolve(xhr.response);
+        else reject(xhr.response);
+      }
+      xhr.onerror = e => reject(e);
+      xhr.send();
+    })
+      .then(buffer => {
+        console.log(`loaded ${this.url} - ${buffer.byteLength} bytes`);
+        if (!buffer) console.log(`Buffer error: ${this.url}`);
+        return context.decodeAudioData(buffer);
+      })
+      .then(soundBuffer => {
+        console.log(`decoded ${this.url}`);
+        this.buffer = soundBuffer;
+        return this;
+      });
   }
 
   play() {
@@ -48,6 +64,7 @@ export class Sound {
     this.source.buffer = this.buffer;
     this.source.loop = this.loop;
     this.source.connect(this.head);
+    if (isNode) this.gain.connect(context.destination);
     this.source.start(context.currentTime);
   }
 
@@ -58,7 +75,7 @@ export class Sound {
       this.gain.gain.setValueAtTime(volume, context.currentTime);
       this.gain.gain.linearRampToValueAtTime(0,context.currentTime + volume*this.fadeOut);
       this.gain.gain.setValueAtTime(1, context.currentTime + volume*this.fadeOut);
-      this.source.stop(context.currentTime + volume*this.fadeOut);
+      if (this.source) this.source.stop(context.currentTime + volume*this.fadeOut);
     }
     else {
       if (this.source) this.source.stop();
@@ -66,14 +83,17 @@ export class Sound {
   }
 }
 
-/*
-  Sound with a VCF (Voltage Controlled Filter). The VCF is currently hardcoded since we only use it once
-*/
+/**
+ * Sound with a VCF (Voltage Controlled Filter). The VCF is currently hardcoded since we only use it once
+ */
 export class VCFSound extends Sound {
   constructor({ url, fadeIn = 0, fadeOut = fadeIn, name = path.basename(url, '.wav') } = {}) {
     super({url, loop: true, fadeIn, fadeOut, name});
   }
+
   play() {
+    // FIXME: If running on node.js
+    if (!context.createBiquadFilter) return super.play();
 
     const lowpass = context.createBiquadFilter();
     lowpass.Q.value = 2;
@@ -94,6 +114,7 @@ export class VCFSound extends Sound {
 
     super.play();
   }
+
   stop() {
     super.stop();
   }
@@ -102,9 +123,11 @@ export class VCFSound extends Sound {
 function initContext() {
   if (typeof AudioContext !== "undefined") {
     return new AudioContext();
-  } else if (typeof webkitAudioContext !== "undefined") {
-    return new webkitAudioContext();
-  } else {
+  } else if (typeof NodeAudioContext !== "undefined") {
+    isNode = true;
+    return new NodeAudioContext();
+  }
+  else {
     throw new Error('AudioContext not supported. :(');
   }
 }
