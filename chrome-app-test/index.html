@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <h1>anyWare Persistance Test</h1>
+    V<span id="anyware-version"></span>
+    <p>Test of various ways of reading or writing persistent data from a Kiosk App</p>
+    <h2>Storage A</h2>
+    <p>Storage A: <span id="storage-a"></span></p>
+    <form id="storage-a-form">
+      <label>Edit Storage A:</label>
+      <input name="myValue" id="storage-a-value" />
+      <input type="submit" value="change"></input>
+    </form>
+    <h2>Storage B</h2>
+    <p>Storage B: <span id="storage-b"></span></p>
+    <form id="storage-b-form">
+      <label>Edit Storage B:</label>
+      <input name="myValue" id="storage-b-value" />
+      <input type="submit" value="change"></input>
+    </form>
+    <p>Console:</p>
+    <textarea id="log"></textarea>
+    <script src="app.js"></script>
+</body>
+</html>

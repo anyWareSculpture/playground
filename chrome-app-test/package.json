@@ -1,0 +1,16 @@
+{
+  "name": "chrome-app-test",
+  "version": "1.0.0",
+  "description": "<a target=\"_blank\" href=\"https://chrome.google.com/webstore/detail/ajjcafkkflbcealbcfjajolnkogffgcb\">![Try it now in CWS](https://raw.github.com/GoogleChrome/chrome-app-samples/master/tryitnowbutton.png \"Click here to install this sample from the Chrome Web Store\")</a>",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-shell": "^0.5.1",
+    "gulp-zip": "^3.0.2"
+  }
+}
