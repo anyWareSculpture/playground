@@ -29,6 +29,8 @@ uint32_t MYBLUE = Color(0,20,147);
 #define NUMPIXELS      10
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
+#define INVERT_STATE 1
+
 struct IRPixel {
   int id;
   int sensorPin;
@@ -45,7 +47,10 @@ struct IRPixel {
   }
   
   void readSensor() {
-    if (irState.update()) state = irState.read();
+    if (irState.update()) {
+       state = irState.read();
+       if (INVERT_STATE) state = !state;
+    }
   }
 
   bool getState() {
@@ -72,15 +77,29 @@ IRPixel irpixels[NUMPIXELS] = {
 };
 
 void setup() {
-  SetUpIR();
   Serial.begin(115200);
   Serial.println("Hello SimonTester");
   for (int i=0;i<NUMPIXELS;i++) irpixels[i].setup();
   pixels.begin(); // This initializes the NeoPixel library.
+  pixels.show();
+  SetUpIR();
+
+  colorWipe(Color(255, 0, 0), 50); // Red
+  colorWipe(Color(0, 255, 0), 50); // Green
+  colorWipe(Color(0, 0, 255), 50); // Blue
+
+ }
+
+// Fill the dots one after the other with a color
+void colorWipe(uint32_t c, uint8_t wait) {
+  for(uint16_t i=0; i<NUMPIXELS; i++) {
+      irpixels[i].setColor(c);
+      pixels.show();
+      delay(wait);
+  }
 }
 
 void loop() { 
-
   int numpixels = 0;
   for (int i=0;i<NUMPIXELS;i++) {
     irpixels[i].readSensor();
@@ -106,7 +125,6 @@ void loop() {
   }
   for (int i=0;i<NUMPIXELS;i++) irpixels[i].setColor(irpixels[i].getState() ? col : BLACK);
   pixels.show();
-  return;
 }
 
 void SetUpIR() {

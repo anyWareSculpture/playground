@@ -5,11 +5,20 @@ A walkthrough of writing the seed application is available [here](http://briantf
 
 ## Running it
 
-First, grab the dependencies with npm:
+1) Install node libraries with npm:
 
     npm install
 
-Then run the app like so:
+2) We also need global dependencies:
+    npm install -g bower
+(..or add node_modules/.bin to your PATH)
+
+3) Install client libraries with bower
+
+    cd public
+    bower install
+
+3) Run the app like so:
 
     node app.js
 

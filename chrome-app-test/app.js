@@ -5,12 +5,27 @@
 
   var logarea = document.querySelector('textarea');
 
+  document.addEventListener("keydown", function(e) {
+    if (e.keyCode == 0xbc && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      chrome.app.window.create('prefs.html', {
+        'bounds': {
+          'width': 600,
+          'height': 500
+        }
+      });
+    }
+  });
+
   window.onload = function() {
     var manifest = chrome.runtime.getManifest();
-    console.log(`Version: ${manifest.version}`);
-    console.debug(document);
-    const v = document.getElementById('anyware-version');
+    var v = document.getElementById('anyware-version');
     v.innerHTML = manifest.version;
+
+    var restart = document.getElementById('restart');
+    restart.addEventListener('click', function() {
+      chrome.runtime.reload();
+    });
   }
 
   function log(str) {
@@ -31,18 +46,6 @@
 
   var logarea = document.querySelector('textarea');
 
-  window.onload = function() {
-    var manifest = chrome.runtime.getManifest();
-    console.log(`Version: ${manifest.version}`);
-    console.debug(document);
-    const v = document.getElementById('anyware-version');
-    v.innerHTML = manifest.version;
-  }
-
-  function log(str) {
-    logarea.value=str+"\n"+logarea.value;
-  }
-  
   storageBform.addEventListener('submit', function(ev) {
     var newValue = storageBinput.value;
     chrome.storage.sync.set({"storage-b-value": newValue}, function() {
