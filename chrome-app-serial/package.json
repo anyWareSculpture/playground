@@ -1,6 +1,6 @@
 {
   "name": "chrome-serial-test",
-  "version": "0.2.1",
+  "version": "0.2.3",
   "description": "<a target=\"_blank\" href=\"https://chrome.google.com/webstore/detail/ajjcafkkflbcealbcfjajolnkogffgcb\">![Try it now in CWS](https://raw.github.com/GoogleChrome/chrome-app-samples/master/tryitnowbutton.png \"Click here to install this sample from the Chrome Web Store\")</a>",
   "main": "main.js",
   "scripts": {
@@ -9,12 +9,15 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "babel-eslint": "^4.1.6",
     "babel-plugin-transform-class-properties": "^6.3.13",
+    "babel-polyfill": "^6.3.14",
     "babel-preset-es2015": "^6.3.13",
     "babelify": "^7.2.0",
     "browser-serialport": "^2.0.3",
     "browser-sync": "^2.10.1",
     "browserify": "^12.0.1",
+    "eslint": "^1.10.3",
     "gulp": "^3.9.0",
     "gulp-debug": "^2.1.2",
     "gulp-notify": "^2.2.0",
