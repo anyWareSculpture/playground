@@ -106,6 +106,7 @@ export default class SerialManager extends events.EventEmitter {
         }
         else {
           console.log(`Skipping incompatible port: ${portInfo.comName} ${portInfo.manufacturer} ${portInfo.vendorId}`);
+          this.ports[portInfo.comName] = 'Incompatible';
           done[index] = true;
           if (done.every((d) => d)) callback();
         }
@@ -148,6 +149,7 @@ export default class SerialManager extends events.EventEmitter {
     port.initialize(this.identity, (error) => {
       if (error) {
         console.warn(`ERROR: Failed to open serial port ${port.path}: ${error.message}`);
+        this.ports[port.path] = error.message;
       }
       else {
         this._addPortPatterns(port);

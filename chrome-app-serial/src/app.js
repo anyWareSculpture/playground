@@ -1,3 +1,5 @@
+import "babel-polyfill";
+
 import * as serialProtocol from './serial/serial-protocol';
 const {SerialProtocolCommandBuilder} = serialProtocol;
 import SerialManager from './serial/serial-manager';
@@ -67,19 +69,21 @@ function setupSerialManager(serialConfig) {
     const table = document.getElementById('serial-ports');
     for (let portId of Object.keys(serialManager.ports)) {
       const port = serialManager.ports[portId];
-      const patterns = port.supportedPatterns.join(', ');
-      const cell = table.insertRow(-1).insertCell(0);
-      console.log(`${portId}: ${patterns}`);
-      cell.innerHTML = `${portId}: ${patterns}`;
+      const row = table.insertRow(-1);
+      row.insertCell(-1).innerHTML = portId;
+      let info;
+      if (typeof port === 'string') info = port;
+      else info = port.supportedPatterns ? port.supportedPatterns.join(', ') : '';
+      row.insertCell(-1).innerHTML = info;
     }
 
     const commands = buildRequiredCommands();
     const statusTable = document.getElementById('serial-status');
     for (let cmdobj of commands) {
       const ports = serialManager.findTargetPorts(cmdobj.cmd);
-      console.debug(`${cmdobj.name} ${ports.size === 0 ? 'Not' : ''} OK`);
-      const cell = statusTable.insertRow(-1).insertCell(0);
-      cell.innerHTML = `${cmdobj.name} ${ports.size === 0 ? 'Not' : ''} OK`;
+      const row = table.insertRow(-1);
+      row.insertCell(-1).innerHTML = cmdobj.name;
+      row.insertCell(-1).innerHTML = `${ports.size === 0 ? 'Not' : ''} OK`;
     }
 
   });
