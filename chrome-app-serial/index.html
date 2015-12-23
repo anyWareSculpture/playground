@@ -7,20 +7,19 @@
 <body>
     <h1>anyWare Serial Test</h1>
     V<span id="anyware-version"></span>
+    <button id="restart">Restart</button>
     <p>Serial communication test</p>
     <div>
       <h2>Serial Ports</h2>
-      <table id="serial-ports">
-      </table>
+      <button id="rescan">Rescan</button>
+      <div id="serial-ports"></div>
     </div>
     <div>
       <h2>Serial Status</h2>
-      <table id="serial-status">
-      </table>
+      <div id="serial-status"></div>
     </div>
     <p>Console:</p>
     <textarea id="log"></textarea>
-    <button id="restart">Restart</button>
     <script src="bundle.js"></script>
 </body>
 </html>

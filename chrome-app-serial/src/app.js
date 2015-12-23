@@ -4,10 +4,10 @@ import * as serialProtocol from './serial/serial-protocol';
 const {SerialProtocolCommandBuilder} = serialProtocol;
 import SerialManager from './serial/serial-manager';
 
-var logarea = document.querySelector('textarea');
+const logarea = document.querySelector('textarea');
 
-document.addEventListener("keydown", function(e) {
-  if (e.keyCode == 0xbc && (e.ctrlKey || e.metaKey)) {
+document.addEventListener("keydown", (e) => {
+  if (e.keyCode === 0xbc && (e.ctrlKey || e.metaKey)) {
     e.preventDefault();
     chrome.app.window.create('prefs.html', {
       'bounds': {
@@ -19,21 +19,29 @@ document.addEventListener("keydown", function(e) {
 });
 
 window.onload = function() {
+  let serialManager = setupSerialManager(serialConfig);
+
   const manifest = chrome.runtime.getManifest();
-  var v = document.getElementById('anyware-version');
+  const v = document.getElementById('anyware-version');
   v.innerHTML = manifest.version;
 
-  var restart = document.getElementById('restart');
+  const restart = document.getElementById('restart');
   restart.addEventListener('click', function() {
     chrome.runtime.reload();
+  });
+
+  const rescan = document.getElementById('rescan');
+  rescan.addEventListener('click', function() {
+    console.log('Rescan serial');
+    serialManager.disconnect((error) => {
+      serialManager = setupSerialManager(serialConfig);
+    });
   });
 }
 
 function log(str) {
   logarea.value=str+"\n"+logarea.value;
 }
-
-var logarea = document.querySelector('textarea');
 
 const serialConfig = {
   COMMAND_DELIMETER: "\n",
@@ -59,17 +67,18 @@ const serialConfig = {
   ])
 };
 
-setupSerialManager(serialConfig);
-
 function setupSerialManager(serialConfig) {
-  const serialManager = new SerialManager(serialConfig, 'dummy');
+  const serialManager = new SerialManager(serialConfig);
   serialManager.searchPorts(() => {
     console.log(`Finished searching all serial ports: ${Object.keys(serialManager.ports).length} ports found`);
 
-    const table = document.getElementById('serial-ports');
+    const serialDiv = document.getElementById('serial-ports');
+    const serialTable = document.createElement('table');
+    serialDiv.innerHTML = '';
+    serialDiv.appendChild(serialTable);
     for (let portId of Object.keys(serialManager.ports)) {
       const port = serialManager.ports[portId];
-      const row = table.insertRow(-1);
+      const row = serialTable.insertRow(-1);
       row.insertCell(-1).innerHTML = portId;
       let info;
       if (typeof port === 'string') info = port;
@@ -78,10 +87,13 @@ function setupSerialManager(serialConfig) {
     }
 
     const commands = buildRequiredCommands();
-    const statusTable = document.getElementById('serial-status');
+    const statusDiv = document.getElementById('serial-status');
+    const statusTable = document.createElement('table');
+    statusDiv.innerHTML = '';
+    statusDiv.appendChild(statusTable);
     for (let cmdobj of commands) {
       const ports = serialManager.findTargetPorts(cmdobj.cmd);
-      const row = table.insertRow(-1);
+      const row = statusTable.insertRow(-1);
       row.insertCell(-1).innerHTML = cmdobj.name;
       row.insertCell(-1).innerHTML = `${ports.size === 0 ? 'Not' : ''} OK`;
     }

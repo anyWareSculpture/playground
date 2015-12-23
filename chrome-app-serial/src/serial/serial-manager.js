@@ -25,16 +25,15 @@ export default class SerialManager extends events.EventEmitter {
    */
   static EVENT_COMMAND = "command";
 
-  constructor(serialConfig, identity) {
+  constructor(serialConfig) {
     super();
 
     this.config = serialConfig;
-    this.identity = identity;
 
     this.patterns = {}; // { patternRegexp: [portIds..] }
     this.ports = {};
 
-    this.commandQueue = [];
+    this._commandQueue = [];
     this._setupCommandQueueProcessor();
   }
 
@@ -48,7 +47,7 @@ export default class SerialManager extends events.EventEmitter {
 
     for (let portId of targetPorts) {
       const port = this.ports[portId];
-      this.commandQueue.unshift([port, command]);
+      this._commandQueue.unshift([port, command]);
     }
 
     if (targetPorts.size > 0) {
@@ -119,6 +118,33 @@ export default class SerialManager extends events.EventEmitter {
     });
   }
 
+  // Disconnect all ports
+  disconnect(callback) {
+    function check(ports) {
+      if (Object.keys(ports).every((p) => ports[p] === null)) {
+        callback();
+      }
+    }
+    if (Object.keys(this.ports).length === 0) callback();
+    for (let portId of Object.keys(this.ports)) {
+      console.log(portId);
+      const port = this.ports[portId];
+      if (typeof port === 'string') {
+        this.ports[portId] = null;
+        check(this.ports);
+      }
+      else if (port) {
+        port.close(() => {
+          this.ports[portId] = null;
+          check(this.ports);
+        });
+      }
+      else {
+        check(this.ports);
+      }
+    }
+  }
+
   _isValidPort(portInfo) {
     if (portInfo.vendorId !== undefined && !this.config.HARDWARE_VENDOR_IDS.has(portInfo.vendorId)) {
       return false;
@@ -146,7 +172,7 @@ export default class SerialManager extends events.EventEmitter {
     const port = new SerialPort(this.config, serialPortPath, {
       baudrate: this.config.BAUDRATE
     });
-    port.initialize(this.identity, (error) => {
+    port.initialize((error) => {
       if (error) {
         console.warn(`ERROR: Failed to open serial port ${port.path}: ${error.message}`);
         this.ports[port.path] = error.message;
@@ -191,11 +217,11 @@ export default class SerialManager extends events.EventEmitter {
 
   _setupCommandQueueProcessor() {
     setInterval(() => {
-      if (this.commandQueue.length === 0) {
+      if (this._commandQueue.length === 0) {
         return;
       }
 
-      const [port, command] = this.commandQueue.pop();
+      const [port, command] = this._commandQueue.pop();
       port.write(command);
     }, DELAY_BETWEEN_SERIAL_COMMANDS);
   }

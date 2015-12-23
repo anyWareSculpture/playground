@@ -2,19 +2,17 @@ const serialProtocol = require('./serial-protocol');
 const {SerialProtocolCommandBuilder} = serialProtocol;
 
 export default class SerialHandshake {
-  constructor(serialConfig, identity, port) {
-    this.serialConfig = serialConfig;
-    this.handshakeConfig = this.serialConfig.HANDSHAKE;
-    this.identity = identity;
+  constructors(handshakeConfig, port) {
+    this.handshakeConfig = handshakeConfig;
     this.port = port;
-    this.callback = null;
+    this._callback = null;
 
     this._helloSucceeded = false;
     this._helloAttempts = 0;
   }
 
   execute(callback) {
-    this.callback = callback;
+    this._callback = callback;
     this._sendHello();
     this._handleNextCommandWith(this._hello);
     this._beginTimeout();
@@ -102,11 +100,11 @@ export default class SerialHandshake {
     if (!message) {
       return;
     }
-    this.callback(new Error(message.toString()));
+    this._callback(new Error(message.toString()));
   }
 
   _finish() {
-    this.callback();
+    this._callback();
   }
 
   _beginTimeout() {
@@ -115,6 +113,7 @@ export default class SerialHandshake {
         // no arguments resets it all
         this._handleNextCommandWith();
         this._error(`Connection to ${this.port.path} timed out after ${this.handshakeConfig.TIMEOUT} ms`);
+        this.port.close();
       }
     }, this.handshakeConfig.TIMEOUT);
   }

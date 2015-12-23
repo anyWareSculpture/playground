@@ -67,8 +67,8 @@ export default class SerialPort extends events.EventEmitter {
    * @param {Function} [callback] - The callback function to call once the connection has been closed, should take an error parameter
    */
   close(callback) {
-    this._port.close((error) => {
-      callback(error);
+    this._port.close((error, result) => {
+      if (typeof callback === 'function') callback(error, result);
     });
   }
 
@@ -84,17 +84,21 @@ export default class SerialPort extends events.EventEmitter {
     this._nextCommandHandler = callback || null;
   }
 
-  initialize(identity, callback) {
-    this._port.open((error) => {
+  initialize(callback) {
+    this._port.open((error, info) => {
       if (error) {
         callback(error);
         return;
       }
 
+      console.log(`Opened serial port ${this.path}`);
+      console.log(info);
+
       this._port.on("data", this._handleData.bind(this));
       this._port.on("error", this._handleError.bind(this));
+      this._port.on("close", this._handleClose.bind(this));
 
-      this._beginHandshake(identity, callback);
+      this._beginHandshake(callback);
     });
   }
 
@@ -105,7 +109,12 @@ export default class SerialPort extends events.EventEmitter {
   }
 
   _handleError(error) {
+    this._error(error.message);
     this._handleParsedCommand(error);
+  }
+
+  _handleClose(error, result) {
+    console.log(`DEBUG: Port closed: ${error} ${result}`);
   }
 
   _parseBuffer() {
@@ -173,8 +182,8 @@ export default class SerialPort extends events.EventEmitter {
     this.emit(SerialPort.EVENT_COMMAND, commandName, commandData);
   }
 
-  _beginHandshake(identity, callback) {
-    const handshake = new SerialHandshake(this.config, identity, this);
+  _beginHandshake(callback) {
+    const handshake = new SerialHandshake(this.config.HANDSHAKE, this);
     handshake.execute(this._completeHandshake.bind(this, callback));
   }
 
