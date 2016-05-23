@@ -1,0 +1,4 @@
+Max speed:
+
+AVR slaves: F_CPU/4 (to be able to sample the signal).
+AVR master: F_CPU/2 (since we're just clocking out)
